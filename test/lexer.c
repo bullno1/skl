@@ -61,8 +61,8 @@ normal(const MunitParameter params[], void* fixture)
 			.type = SKL_TOKEN_TERM,
 			.lexeme = string_ref("\n"),
 			.location = {
-				.start = {.line = 1, .column = 1},
-				.end = {.line = 1, .column = 1}
+				.start = {.line = 1, .column = 2},
+				.end = {.line = 1, .column = 2}
 			}
 		},
 		{
@@ -111,9 +111,10 @@ normal(const MunitParameter params[], void* fixture)
 		skl_assert_enum(skl_lexer_error_t, SKL_LEX_OK, ==, err);
 
 		skl_token_t expected_token = expected_tokens[i];
-		skl_assert_string_ref_equal(expected_token.lexeme, token.lexeme);
 
+		skl_assert_string_ref_equal(expected_token.lexeme, token.lexeme);
 		skl_assert_enum(skl_token_type_t, expected_token.type, ==, token.type);
+		skl_assert_loc_range_equal(expected_token.location, token.location);
 	}
 
 	err = skl_lexer_next_token(&ctx->lexer, &token);

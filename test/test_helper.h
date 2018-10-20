@@ -32,6 +32,22 @@
 		} \
 	} while (0)
 
+#define skl_assert_loc_equal(EXPECTED, ACTUAL) \
+	do { \
+		skl_location_t loc_expected = (EXPECTED); \
+		skl_location_t loc_actual = (ACTUAL); \
+		munit_assert_uint(loc_expected.column, ==, loc_actual.column); \
+		munit_assert_uint(loc_expected.line, ==, loc_actual.line); \
+	} while (0)
+
+#define skl_assert_loc_range_equal(EXPECTED, ACTUAL) \
+	do { \
+		skl_loc_range_t loc_range_expected = (EXPECTED); \
+		skl_loc_range_t loc_range_actual = (ACTUAL); \
+		skl_assert_loc_equal(loc_range_expected.start, loc_range_actual.start); \
+		skl_assert_loc_equal(loc_range_expected.end, loc_range_actual.end); \
+	} while(0)
+
 
 static inline skl_ctx_t*
 create_ctx()
