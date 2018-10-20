@@ -42,8 +42,8 @@ normal(const MunitParameter params[], void* fixture)
 		"# comment \r"
 		" 12; \"hi\\\"\" \r"
 		"test-23 -3 -ve -\r\n"
-		/*" \"f \\\"\"\n"*/
-		/*"  \" \\\\\""*/
+		" \"f \\\"\"\n"
+		"  ' \\\\'"
 	;
 
 	 skl_token_t expected_tokens[] = {
@@ -221,6 +221,30 @@ normal(const MunitParameter params[], void* fixture)
 			.location = {
 				.start = {.line = 7, .column = 18},
 				.end = {.line = 7, .column = 18}
+			}
+		},
+		{
+			.type = SKL_TOKEN_STRING,
+			.lexeme = string_ref("f \\\""),
+			.location = {
+				.start = {.line = 8, .column = 2},
+				.end = {.line = 8, .column = 7}
+			}
+		},
+		{
+			.type = SKL_TOKEN_TERMINATE,
+			.lexeme = string_ref("\n"),
+			.location = {
+				.start = {.line = 8, .column = 8},
+				.end = {.line = 8, .column = 8}
+			}
+		},
+		{
+			.type = SKL_TOKEN_STRING,
+			.lexeme = string_ref(" \\\\"),
+			.location = {
+				.start = {.line = 9, .column = 3},
+				.end = {.line = 9, .column = 7}
 			}
 		},
 	 };
