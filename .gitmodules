@@ -1,0 +1,9 @@
+[submodule "bk"]
+	path = deps/bk
+	url = https://github.com/bullno1/bk
+[submodule "ugc"]
+	path = deps/ugc
+	url = https://github.com/bullno1/ugc
+[submodule "deps/munit"]
+	path = deps/munit
+	url = https://github.com/nemequ/munit/
