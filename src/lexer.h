@@ -13,7 +13,7 @@ typedef struct skl_lexer_s skl_lexer_t;
 #define SKL_TOKEN(X) \
 	X(SKL_TOKEN_LIST_BEGIN) \
 	X(SKL_TOKEN_LIST_END) \
-	X(SKL_TOKEN_TERM) \
+	X(SKL_TOKEN_TERMINATE) \
 	X(SKL_TOKEN_STRING) \
 	X(SKL_TOKEN_SYMBOL) \
 	X(SKL_TOKEN_NUMBER) \

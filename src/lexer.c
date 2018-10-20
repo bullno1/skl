@@ -90,12 +90,15 @@ skl_lexer_next_token(skl_lexer_t* lexer, skl_token_t* token)
 				break;
 			case ';':
 			case '\n':
-				return skl_lexer_end_capture(lexer, token, SKL_TOKEN_TERM);
+				return skl_lexer_end_capture(lexer, token, SKL_TOKEN_TERMINATE);
 			case '\r':
 				err = skl_lexer_peek_char(lexer, &ch);
-				if(err == SKL_LEX_OK && ch != '\n')
+				if(false
+					|| (err == SKL_LEX_OK && ch != '\n')
+					|| (err == SKL_LEX_EOF)
+				)
 				{
-					return skl_lexer_end_capture(lexer, token, SKL_TOKEN_TERM);
+					return skl_lexer_end_capture(lexer, token, SKL_TOKEN_TERMINATE);
 				}
 				break;
 			case '"':
@@ -327,13 +330,22 @@ skl_lexer_consume_char(skl_lexer_t* lexer)
 		bk_array_push(lexer->capture_buf, current_char);
 	}
 
-	if(false
-		|| current_char == '\r'
-		|| (current_char == '\n' && last_char != '\r')
-	)
+	if(last_char != '\r' && current_char == '\n') // \n
 	{
 		lexer->location.column = 1;
 		lexer->location.line++;
+	}
+	else if(last_char == '\r' && current_char == '\n') // \r\n
+	{
+		lexer->location.column = 1;
+		lexer->location.line++;
+	}
+	else if(last_char == '\r' && current_char != '\n') // \r
+	{
+		lexer->previous_location.column = 1;
+		lexer->previous_location.line++;
+		lexer->location = lexer->previous_location;
+		lexer->location.column++;
 	}
 	else
 	{

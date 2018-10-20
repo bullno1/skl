@@ -37,13 +37,11 @@ normal(const MunitParameter params[], void* fixture)
 	char* text =
 		"(\n"
 		"  ) \n"
-		/*"  [ ] { }\n"*/
-		/*"50.6 \"hi hi \" \r\n"*/
-		/*"# comment 12 \"hi\\"" \r"*/
-		/*"; 12 \"hi\\"" \r"*/
-		/*"\n"*/
+		"  [ ] { }\n"
+		"50.6 \"hi hi \" \r\n"
+		"# comment \r"
+		" 12; \"hi\\\"\" \r"
 		/*"test-23 -3 -ve -\r\n"*/
-		/*"\r"*/
 		/*" \"f \\\"\"\n"*/
 		/*"  \" \\\\\""*/
 	;
@@ -58,7 +56,7 @@ normal(const MunitParameter params[], void* fixture)
 			}
 		},
 		{
-			.type = SKL_TOKEN_TERM,
+			.type = SKL_TOKEN_TERMINATE,
 			.lexeme = string_ref("\n"),
 			.location = {
 				.start = {.line = 1, .column = 2},
@@ -74,11 +72,115 @@ normal(const MunitParameter params[], void* fixture)
 			}
 		},
 		{
-			.type = SKL_TOKEN_TERM,
+			.type = SKL_TOKEN_TERMINATE,
 			.lexeme = string_ref("\n"),
 			.location = {
 				.start = {.line = 2, .column = 5},
 				.end = {.line = 2, .column = 5}
+			}
+		},
+		{
+			.type = SKL_TOKEN_LIST_BEGIN,
+			.lexeme = string_ref("["),
+			.location = {
+				.start = {.line = 3, .column = 3},
+				.end = {.line = 3, .column = 3}
+			}
+		},
+		{
+			.type = SKL_TOKEN_LIST_END,
+			.lexeme = string_ref("]"),
+			.location = {
+				.start = {.line = 3, .column = 5},
+				.end = {.line = 3, .column = 5}
+			}
+		},
+		{
+			.type = SKL_TOKEN_LIST_BEGIN,
+			.lexeme = string_ref("{"),
+			.location = {
+				.start = {.line = 3, .column = 7},
+				.end = {.line = 3, .column = 7}
+			}
+		},
+		{
+			.type = SKL_TOKEN_LIST_END,
+			.lexeme = string_ref("}"),
+			.location = {
+				.start = {.line = 3, .column = 9},
+				.end = {.line = 3, .column = 9}
+			}
+		},
+		{
+			.type = SKL_TOKEN_TERMINATE,
+			.lexeme = string_ref("\n"),
+			.location = {
+				.start = {.line = 3, .column = 10},
+				.end = {.line = 3, .column = 10}
+			}
+		},
+		{
+			.type = SKL_TOKEN_NUMBER,
+			.lexeme = string_ref("50.6"),
+			.location = {
+				.start = {.line = 4, .column = 1},
+				.end = {.line = 4, .column = 4}
+			}
+		},
+		{
+			.type = SKL_TOKEN_STRING,
+			.lexeme = string_ref("hi hi "),
+			.location = {
+				.start = {.line = 4, .column = 6},
+				.end = {.line = 4, .column = 13}
+			}
+		},
+		{
+			.type = SKL_TOKEN_TERMINATE,
+			.lexeme = string_ref("\n"),
+			.location = {
+				.start = {.line = 4, .column = 16},
+				.end = {.line = 4, .column = 16}
+			}
+		},
+		{
+			.type = SKL_TOKEN_TERMINATE,
+			.lexeme = string_ref("\r"),
+			.location = {
+				.start = {.line = 5, .column = 11},
+				.end = {.line = 5, .column = 11}
+			}
+		},
+		{
+			.type = SKL_TOKEN_NUMBER,
+			.lexeme = string_ref("12"),
+			.location = {
+				.start = {.line = 6, .column = 2},
+				.end = {.line = 6, .column = 3}
+			}
+		},
+		{
+			.type = SKL_TOKEN_TERMINATE,
+			.lexeme = string_ref(";"),
+			.location = {
+				.start = {.line = 6, .column = 4},
+				.end = {.line = 6, .column = 4}
+			}
+		},
+		{
+			.type = SKL_TOKEN_STRING,
+			.lexeme = string_ref("hi\\\""),
+			.location = {
+				.start = {.line = 6, .column = 6},
+				.end = {.line = 6, .column = 11}
+			}
+		},
+		{
+			.type = SKL_TOKEN_TERMINATE,
+			.lexeme = string_ref("\r"),
+			.location = {
+				.start = {.line = 6, .column = 13},
+				.end = {.line = 6, .column = 13}
 			}
 		},
 	 };
