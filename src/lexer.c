@@ -57,6 +57,7 @@ skl_lexer_reset(skl_lexer_t* lexer, struct bk_file_s* file)
 	lexer->file = file;
 	lexer->location.column = 1;
 	lexer->location.line = 1;
+	lexer->previous_location = lexer->location;
 	bk_array_clear(lexer->capture_buf);
 	lexer->capturing = false;
 	lexer->buffered = false;
@@ -294,7 +295,10 @@ skl_lexer_peek_char(skl_lexer_t* lexer, char* ch)
 	}
 
 	size_t num_bytes = sizeof(*ch);
-	if(bk_fread(lexer->file, ch, &num_bytes) != 0) { return SKL_LEX_IO_ERROR; }
+	if(bk_fread(lexer->file, &lexer->read_buf, &num_bytes) != 0)
+	{
+		return SKL_LEX_IO_ERROR;
+	}
 
 	if(num_bytes == 0)
 	{
@@ -303,6 +307,7 @@ skl_lexer_peek_char(skl_lexer_t* lexer, char* ch)
 	}
 	else
 	{
+		*ch = lexer->read_buf;
 		lexer->buffered = true;
 		return SKL_LEX_OK;
 	}
@@ -316,6 +321,11 @@ skl_lexer_consume_char(skl_lexer_t* lexer)
 	char last_char = lexer->last_char;
 	char current_char = lexer->read_buf;
 	lexer->previous_location = lexer->location;
+
+	if(lexer->capturing)
+	{
+		bk_array_push(lexer->capture_buf, current_char);
+	}
 
 	if(false
 		|| current_char == '\r'
@@ -350,9 +360,11 @@ skl_lexer_end_capture(
 	lexer->capturing = false;
 	token->location.end = lexer->previous_location;
 	token->type = token_type;
+
+	bk_array_push(lexer->capture_buf, 0);
 	token->lexeme = (skl_string_ref_t) {
 		.ptr = lexer->capture_buf,
-		.length = bk_array_len(lexer->capture_buf),
+		.length = bk_array_len(lexer->capture_buf) - 1,
 	};
 
 	return SKL_LEX_OK;

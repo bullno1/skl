@@ -21,7 +21,10 @@ CFLAGS += \
 
 TEST_SOURCES = $(shell find test -name '*.c')
 SKL_SOURCES = $(shell find src -name '*.c')
-TEST_BK_SOURCES = deps/bk/src/array.c deps/bk/src/default_allocator.c
+TEST_BK_SOURCES = \
+	deps/bk/src/array.c \
+	deps/bk/src/default_allocator.c \
+	deps/bk/src/fs/mem.c
 
 
 all: test
