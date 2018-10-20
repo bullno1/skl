@@ -45,7 +45,6 @@ struct skl_lexer_s
 
 	BK_ARRAY(char) capture_buf;
 	char read_buf;
-	char last_char;
 	bool capturing;
 	bool buffered;
 	bool eof;

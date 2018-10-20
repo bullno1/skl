@@ -41,7 +41,7 @@ normal(const MunitParameter params[], void* fixture)
 		"50.6 \"hi hi \" \r\n"
 		"# comment \r"
 		" 12; \"hi\\\"\" \r"
-		/*"test-23 -3 -ve -\r\n"*/
+		"test-23 -3 -ve -\r\n"
 		/*" \"f \\\"\"\n"*/
 		/*"  \" \\\\\""*/
 	;
@@ -181,6 +181,46 @@ normal(const MunitParameter params[], void* fixture)
 			.location = {
 				.start = {.line = 6, .column = 13},
 				.end = {.line = 6, .column = 13}
+			}
+		},
+		{
+			.type = SKL_TOKEN_SYMBOL,
+			.lexeme = string_ref("test-23"),
+			.location = {
+				.start = {.line = 7, .column = 1},
+				.end = {.line = 7, .column = 7}
+			}
+		},
+		{
+			.type = SKL_TOKEN_NUMBER,
+			.lexeme = string_ref("-3"),
+			.location = {
+				.start = {.line = 7, .column = 9},
+				.end = {.line = 7, .column = 10}
+			}
+		},
+		{
+			.type = SKL_TOKEN_SYMBOL,
+			.lexeme = string_ref("-ve"),
+			.location = {
+				.start = {.line = 7, .column = 12},
+				.end = {.line = 7, .column = 14}
+			}
+		},
+		{
+			.type = SKL_TOKEN_SYMBOL,
+			.lexeme = string_ref("-"),
+			.location = {
+				.start = {.line = 7, .column = 16},
+				.end = {.line = 7, .column = 16}
+			}
+		},
+		{
+			.type = SKL_TOKEN_TERMINATE,
+			.lexeme = string_ref("\n"),
+			.location = {
+				.start = {.line = 7, .column = 18},
+				.end = {.line = 7, .column = 18}
 			}
 		},
 	 };

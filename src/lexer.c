@@ -61,7 +61,6 @@ skl_lexer_reset(skl_lexer_t* lexer, struct bk_file_s* file)
 	bk_array_clear(lexer->capture_buf);
 	lexer->capturing = false;
 	lexer->buffered = false;
-	lexer->last_char = 0;
 	lexer->eof = false;
 }
 
@@ -98,6 +97,8 @@ skl_lexer_next_token(skl_lexer_t* lexer, skl_token_t* token)
 					|| (err == SKL_LEX_EOF)
 				)
 				{
+					lexer->location.column = 1;
+					lexer->location.line++;
 					return skl_lexer_end_capture(lexer, token, SKL_TOKEN_TERMINATE);
 				}
 				break;
@@ -321,7 +322,6 @@ skl_lexer_consume_char(skl_lexer_t* lexer)
 {
 	if(!lexer->buffered) { return; }
 
-	char last_char = lexer->last_char;
 	char current_char = lexer->read_buf;
 	lexer->previous_location = lexer->location;
 
@@ -330,22 +330,10 @@ skl_lexer_consume_char(skl_lexer_t* lexer)
 		bk_array_push(lexer->capture_buf, current_char);
 	}
 
-	if(last_char != '\r' && current_char == '\n') // \n
+	if(current_char == '\n')
 	{
 		lexer->location.column = 1;
 		lexer->location.line++;
-	}
-	else if(last_char == '\r' && current_char == '\n') // \r\n
-	{
-		lexer->location.column = 1;
-		lexer->location.line++;
-	}
-	else if(last_char == '\r' && current_char != '\n') // \r
-	{
-		lexer->previous_location.column = 1;
-		lexer->previous_location.line++;
-		lexer->location = lexer->previous_location;
-		lexer->location.column++;
 	}
 	else
 	{
@@ -353,7 +341,6 @@ skl_lexer_consume_char(skl_lexer_t* lexer)
 	}
 
 	lexer->buffered = false;
-	lexer->last_char = current_char;
 }
 
 void
