@@ -7,3 +7,6 @@
 [submodule "deps/munit"]
 	path = deps/munit
 	url = https://github.com/nemequ/munit/
+[submodule "deps/xxHash"]
+	path = deps/xxHash
+	url = https://github.com/Cyan4973/xxHash.git
