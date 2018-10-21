@@ -15,8 +15,8 @@ skl_create_ctx(skl_config_t* cfg)
 
 	skl_strpool_init(ctx);
 	skl_gc_init(ctx);
-	skl_vm_init(&ctx->default_vm, ctx);
-	ctx->vm = &ctx->default_vm;
+	skl_vm_init(&ctx->main_vm, ctx);
+	ctx->vm = &ctx->main_vm;
 	skl_lexer_init(&ctx->lexer, ctx);
 
 	return ctx;
@@ -26,7 +26,7 @@ void
 skl_destroy_ctx(skl_ctx_t* ctx)
 {
 	skl_lexer_cleanup(&ctx->lexer);
-	skl_vm_cleanup(&ctx->default_vm);
+	skl_vm_cleanup(&ctx->main_vm);
 	skl_gc_cleanup(ctx);
 	skl_strpool_cleanup(ctx);
 

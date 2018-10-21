@@ -17,6 +17,9 @@ skl_gc_visit(ugc_t* gc, ugc_header_t* header);
 static void
 skl_gc_release(ugc_t* gc, ugc_header_t* header);
 
+static void
+skl_gc_mark_vm(skl_ctx_t* ctx, skl_vm_t* vm);
+
 
 void
 skl_gc_init(skl_ctx_t* ctx)
@@ -97,6 +100,8 @@ skl_gc_visit(ugc_t* gc, ugc_header_t* header)
 	if(header == NULL)
 	{
 		skl_gc_mark_obj(ctx, &ctx->gc.refs->gc_header);
+		skl_gc_mark_vm(ctx, &ctx->main_vm);
+		skl_gc_mark_vm(ctx, ctx->vm);
 	}
 	else
 	{
@@ -113,4 +118,18 @@ skl_gc_release(ugc_t* gc, ugc_header_t* header)
 	skl_gc_header_t* obj = BK_CONTAINER_OF(header, skl_gc_header_t, ugc_header);
 	obj->gc_info->free_fn(ctx, obj);
 	bk_free(ctx->cfg.allocator, obj);
+}
+
+void
+skl_gc_mark_vm(skl_ctx_t* ctx, skl_vm_t* vm)
+{
+	for(skl_value_t* itr = vm->sp; itr <= vm->sp_max; ++itr)
+	{
+		skl_gc_mark_value(ctx, *itr);
+	}
+
+	for(skl_stack_frame_t* itr = vm->fp_min; itr <= vm->fp; ++itr)
+	{
+		skl_gc_mark_obj(ctx, &itr->proc->gc_header);
+	}
 }

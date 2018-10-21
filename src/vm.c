@@ -32,6 +32,9 @@ skl_vm_cleanup(skl_vm_t* vm)
 void
 skl_vm_reset(skl_vm_t* vm)
 {
-	vm->sp = vm->sp_max;
+	vm->sp = vm->sp_max + 1;
 	vm->fp = vm->fp_min;
+	*(vm->fp) = (skl_stack_frame_t) {
+		.bp = vm->sp
+	};
 }

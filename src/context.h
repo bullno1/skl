@@ -16,7 +16,7 @@ struct skl_ctx_s
 	skl_strpool_t strpool;
 	skl_lexer_t lexer;
 
-	skl_vm_t default_vm;
+	skl_vm_t main_vm;
 	skl_vm_t* vm;
 };
 
