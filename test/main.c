@@ -5,6 +5,7 @@
 #define TEST_SUITE(X) \
 	X(lexer) \
 	X(gc) \
+	X(strpool) \
 
 #define DECLARE_SUITE(S) extern MunitSuite S;
 #define IMPORT_SUITE(S) S,
