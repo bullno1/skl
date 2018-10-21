@@ -24,6 +24,7 @@
 
 
 struct bk_allocator_s;
+struct bk_file_s;
 
 typedef struct skl_ctx_s skl_ctx_t;
 typedef struct skl_config_s skl_config_t;
@@ -75,6 +76,11 @@ typedef enum skl_proc_flag_e
 {
 	SKL_PROC_SYNTAX = 1
 } skl_proc_flag_t;
+
+typedef enum skl_dump_flag_e
+{
+	SKL_DUMP_EXTERNAL = 1,
+} skl_dump_flag_t;
 
 typedef skl_exec_status_t(*skl_native_proc_t)(skl_ctx_t*);
 
@@ -234,6 +240,24 @@ skl_deref(skl_ctx_t* ctx, skl_gc_handle_t handle);
 
 SKL_API void
 skl_unref(skl_ctx_t* ctx, skl_gc_handle_t handle);
+
+// Serialization
+
+SKL_API skl_exec_status_t
+skl_dump(
+	skl_ctx_t* ctx, int index, struct bk_file_s* file, skl_dump_flag_t flags
+);
+
+SKL_API skl_exec_status_t
+skl_load(skl_ctx_t* ctx, struct bk_file_s* file, skl_dump_flag_t flags);
+
+// Compile and interpret
+
+SKL_API skl_exec_status_t
+skl_compile(skl_ctx_t* ctx, struct bk_file_s* file, skl_string_ref_t name);
+
+SKL_API skl_exec_status_t
+skl_interpret(skl_ctx_t* ctx, struct bk_file_s* file, skl_string_ref_t name);
 
 // Helper
 
