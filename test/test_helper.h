@@ -53,7 +53,9 @@ BK_INLINE skl_ctx_t*
 create_ctx()
 {
 	skl_config_t cfg = {
-		.allocator = bk_default_allocator
+		.allocator = bk_default_allocator,
+		.operand_stack_size = 256,
+		.call_stack_size = 256,
 	};
 	return skl_create_ctx(&cfg);
 }

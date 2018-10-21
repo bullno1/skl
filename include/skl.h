@@ -82,6 +82,9 @@ typedef skl_exec_status_t(*skl_native_proc_t)(skl_ctx_t*);
 struct skl_config_s
 {
 	struct bk_allocator_s* allocator;
+
+	uint32_t operand_stack_size;
+	uint32_t call_stack_size;
 };
 
 struct skl_string_ref_s

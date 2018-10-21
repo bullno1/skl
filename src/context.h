@@ -4,6 +4,7 @@
 #include "common.h"
 #include "lexer.h"
 #include "gc.h"
+#include "vm.h"
 #include "strpool.h"
 
 
@@ -14,6 +15,9 @@ struct skl_ctx_s
 	skl_gc_t gc;
 	skl_strpool_t strpool;
 	skl_lexer_t lexer;
+
+	skl_vm_t default_vm;
+	skl_vm_t* vm;
 };
 
 #endif
