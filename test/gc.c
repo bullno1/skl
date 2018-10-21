@@ -1,4 +1,5 @@
 #include "../src/context.h"
+#include "../src/list.h"
 #include "test_helper.h"
 
 
@@ -7,10 +8,13 @@ init(const MunitParameter params[], void* fixture)
 {
 	(void)params;
 
-	// If root marking is done properly, the ref list should not get collected
 	skl_ctx_t* ctx = fixture;
 
 	skl_gc(ctx, SKL_GC_COLLECT);
+	skl_gc(ctx, SKL_GC_COLLECT);
+	// If root marking is done properly, the ref list should not get collected
+	// and this will not crash
+	bk_array_len(ctx->gc.refs->elements);
 
 	return MUNIT_OK;
 }
