@@ -1,7 +1,7 @@
 #ifndef SICKLE_OPCODE_H
 #define SICKLE_OPCODE_H
 
-#include "internal.h"
+#include "common.h"
 
 
 #define SKL_OP(X) \

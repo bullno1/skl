@@ -1,7 +1,7 @@
 #ifndef SICKLE_STRING_H
 #define SICKLE_STRING_H
 
-#include "internal.h"
+#include "common.h"
 #include "gc.h"
 
 

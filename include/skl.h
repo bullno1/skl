@@ -3,6 +3,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include <string.h>
 #include <bk/macro.h>
 
 #if SKL_DYNAMIC == 1
@@ -14,6 +15,12 @@
 #else
 #	define SKL_API BK_EXTERN
 #endif
+
+#define SKL_STRING_REF(STR) \
+	(skl_string_ref_t) { \
+		.length = BK_STATIC_ARRAY_LEN(STR) - 1, \
+		.ptr = STR \
+	}
 
 
 struct bk_allocator_s;
@@ -34,7 +41,7 @@ typedef uint16_t skl_source_addr_t;
 	X(SKL_VAL_STRING) \
 	X(SKL_VAL_BOX) \
 	X(SKL_VAL_LIST) \
-	X(SKL_VAL_PROCEDURE) \
+	X(SKL_VAL_PROC) \
 	X(SKL_VAL_OPAQUE) \
 
 BK_ENUM(skl_value_type_t, SKL_VAL)
@@ -158,10 +165,13 @@ skl_type(skl_ctx_t* ctx, int index);
 SKL_API skl_exec_status_t
 skl_len(skl_ctx_t* ctx, int index);
 
-// String
+// Simple type
 
 SKL_API skl_exec_status_t
-skl_string_ref(skl_ctx_t* ctx, int index, skl_string_ref_t* ref);
+skl_to_string(skl_ctx_t* ctx, int index, skl_string_ref_t* ref);
+
+SKL_API skl_exec_status_t
+skl_to_number(skl_ctx_t* ctx, int index, double* number);
 
 // List
 
@@ -221,5 +231,16 @@ skl_deref(skl_ctx_t* ctx, skl_gc_handle_t handle);
 
 SKL_API void
 skl_unref(skl_ctx_t* ctx, skl_gc_handle_t handle);
+
+// Helper
+
+BK_INLINE skl_string_ref_t
+skl_string_ref(const char* string)
+{
+	return (skl_string_ref_t) {
+		.length = strlen(string),
+		.ptr = string
+	};
+}
 
 #endif

@@ -1,7 +1,7 @@
 #ifndef SICKLE_ASM_H
 #define SICKLE_ASM_H
 
-#include "internal.h"
+#include "common.h"
 #include "vm.h"
 
 

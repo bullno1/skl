@@ -4,29 +4,6 @@
 #include <bk/fs/mem.h>
 
 
-struct fixture_s
-{
-	skl_ctx_t* ctx;
-	skl_lexer_t* lexer;
-};
-
-
-static void*
-setup(const MunitParameter params[], void* data)
-{
-	(void)params;
-	(void)data;
-
-	return create_ctx();
-}
-
-static void
-teardown(void* data)
-{
-	skl_destroy_ctx(data);
-}
-
-
 static MunitResult
 normal(const MunitParameter params[], void* fixture)
 {
@@ -294,8 +271,8 @@ static MunitTest tests[] = {
 	{
 		.name = "/normal",
 		.test = normal,
-		.setup = setup,
-		.tear_down = teardown
+		.setup = setup_ctx,
+		.tear_down = teardown_ctx
 	},
 	{ .test = NULL }
 };

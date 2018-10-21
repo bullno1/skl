@@ -1,7 +1,7 @@
 #ifndef SICKLE_BOX_H
 #define SICKLE_BOX_H
 
-#include "internal.h"
+#include "common.h"
 #include "gc.h"
 #include "value.h"
 

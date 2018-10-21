@@ -1,7 +1,7 @@
 #ifndef SICKLE_STRPOOL_H
 #define SICKLE_STRPOOL_H
 
-#include "internal.h"
+#include "common.h"
 #include "vendor/khash.h"
 
 

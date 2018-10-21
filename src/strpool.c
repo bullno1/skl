@@ -1,6 +1,5 @@
 #include <bk/allocator.h>
 #include "context.h"
-#include "gc.h"
 #include "string.h"
 #define XXH_PRIVATE_API
 #define XXH_NAMESPACE skl_
@@ -95,8 +94,6 @@ skl_string_release(skl_ctx_t* ctx, skl_gc_header_t* header)
 	{
 		kh_del(skl_strpool, &ctx->strpool, itr);
 	}
-
-	bk_free(ctx->cfg.allocator, string);
 }
 
 BK_INLINE khint_t

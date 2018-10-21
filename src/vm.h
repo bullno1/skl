@@ -1,7 +1,7 @@
 #ifndef SICKLE_VM_H
 #define SICKLE_VM_H
 
-#include "internal.h"
+#include "common.h"
 #include "opcode.h"
 #include "gc.h"
 #include "value.h"

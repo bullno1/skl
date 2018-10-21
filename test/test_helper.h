@@ -49,7 +49,7 @@
 	} while(0)
 
 
-static inline skl_ctx_t*
+BK_INLINE skl_ctx_t*
 create_ctx()
 {
 	skl_config_t cfg = {
@@ -58,7 +58,7 @@ create_ctx()
 	return skl_create_ctx(&cfg);
 }
 
-static inline skl_string_ref_t
+BK_INLINE skl_string_ref_t
 string_ref(const char* str)
 {
 	return (skl_string_ref_t) {
@@ -67,11 +67,26 @@ string_ref(const char* str)
 	};
 }
 
-static inline bool
+BK_INLINE bool
 skl_string_ref_equal(skl_string_ref_t lhs, skl_string_ref_t rhs)
 {
 	return lhs.length == rhs.length
 		&& strncmp(lhs.ptr, rhs.ptr, lhs.length) == 0;
+}
+
+BK_INLINE void*
+setup_ctx(const MunitParameter params[], void* data)
+{
+	(void)params;
+	(void)data;
+
+	return create_ctx();
+}
+
+BK_INLINE void
+teardown_ctx(void* data)
+{
+	skl_destroy_ctx(data);
 }
 
 #endif

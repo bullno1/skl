@@ -1,7 +1,7 @@
 #ifndef SICKLE_LEXER_H
 #define SICKLE_LEXER_H
 
-#include "internal.h"
+#include "common.h"
 
 
 struct bk_file_s;

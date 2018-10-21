@@ -6,7 +6,8 @@
 #include <bk/array.h>
 
 
-typedef struct skl_string_s skl_string_t;
 typedef struct skl_value_s skl_value_t;
+typedef struct skl_string_s skl_string_t;
+typedef struct skl_list_s skl_list_t;
 
 #endif
