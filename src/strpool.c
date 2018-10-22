@@ -7,14 +7,10 @@
 
 
 static void
-skl_string_mark(skl_ctx_t* ctx, skl_gc_header_t* header);
-
-static void
 skl_string_release(skl_ctx_t* ctx, skl_gc_header_t* header);
 
 
 static const skl_gc_info_t skl_string_gc_info = {
-	.mark_fn = skl_string_mark,
 	.free_fn = skl_string_release,
 };
 
@@ -67,13 +63,6 @@ skl_strpool_alloc(skl_ctx_t* ctx, skl_string_ref_t string)
 	}
 }
 
-
-void
-skl_string_mark(skl_ctx_t* ctx, skl_gc_header_t* header)
-{
-	(void)ctx;
-	(void)header;
-}
 
 void
 skl_string_release(skl_ctx_t* ctx, skl_gc_header_t* header)
