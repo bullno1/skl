@@ -21,8 +21,6 @@ struct skl_tagged_instruction_s
 
 struct skl_asm_s
 {
-	skl_ctx_t* ctx;
-
 	BK_ARRAY(skl_tagged_instruction_t) instructions;
 	BK_ARRAY(skl_string_t*) string_pool;
 	BK_ARRAY(double) number_pool;

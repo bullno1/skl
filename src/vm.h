@@ -81,17 +81,14 @@ struct skl_stack_frame_s
 
 struct skl_vm_s
 {
-	skl_ctx_t* ctx;
+	skl_gc_rescan_header_t gc_header;
 
 	skl_value_t *sp_min, *sp_max, *sp;
 	skl_stack_frame_t *fp_min, *fp_max, *fp;
 };
 
-void
-skl_vm_init(skl_vm_t* vm, skl_ctx_t* ctx);
-
-void
-skl_vm_cleanup(skl_vm_t* vm);
+skl_vm_t*
+skl_vm_alloc(skl_ctx_t* ctx);
 
 void
 skl_vm_reset(skl_vm_t* vm);

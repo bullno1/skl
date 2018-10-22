@@ -18,19 +18,24 @@ static void
 skl_gc_release(ugc_t* gc, ugc_header_t* header);
 
 static void
-skl_gc_mark_vm(skl_ctx_t* ctx, skl_vm_t* vm);
+skl_gc_visit_root(ugc_t* gc);
+
+static void
+skl_gc_visit_obj(ugc_t* gc, ugc_header_t* header);
 
 
 void
 skl_gc_init(skl_ctx_t* ctx)
 {
-	ugc_init(&ctx->gc.ugc, skl_gc_visit, skl_gc_release);
-	ctx->gc.ugc.userdata = ctx;
+	skl_gc_t* gc = &ctx->gc;
+	ugc_init(&gc->ugc, skl_gc_visit, skl_gc_release);
+	gc->ugc.userdata = ctx;
 
-	ctx->gc.refs = skl_list_alloc(ctx, 1);
-	BK_ASSERT(ctx->gc.refs, "Could not allocate gc_refs");
-	ctx->gc.pause = 0;
-	ctx->gc.free_ref_handles =
+	gc->refs = skl_list_alloc(ctx, 1);
+	BK_ASSERT(gc->refs, "Could not allocate gc_refs");
+	gc->pause = 0;
+	gc->rescan_list.next = NULL;
+	gc->free_ref_handles =
 		bk_array_create(ctx->cfg.allocator, skl_gc_handle_t, 1);
 }
 
@@ -48,18 +53,22 @@ skl_gc_alloc(skl_ctx_t* ctx, size_t size, const skl_gc_info_t* gc_info)
 	skl_gc_header_t* obj = bk_malloc(ctx->cfg.allocator, size);
 	if(obj == NULL) { return obj; }
 
+	memset(obj, 0, BK_MIN(sizeof(skl_gc_rescan_header_t), size));
+
+	BK_ASSERT(gc_info != NULL, "Invalid gc_info");
 	obj->gc_info = gc_info;
+
 	ugc_register(&ctx->gc.ugc, &obj->ugc_header);
 
 	return obj;
 }
 
 void
-skl_gc_mark_obj(skl_ctx_t* ctx, skl_gc_header_t* obj)
+skl_gc_mark_obj(skl_ctx_t* ctx, void* obj)
 {
 	if(obj == NULL) { return; }
 
-	ugc_visit(&ctx->gc.ugc, &obj->ugc_header);
+	ugc_visit(&ctx->gc.ugc, obj);
 }
 
 void
@@ -74,20 +83,21 @@ skl_gc_mark_value(skl_ctx_t* ctx, skl_value_t value)
 void
 skl_gc(skl_ctx_t* ctx, skl_gc_op_t op)
 {
+	skl_gc_t* gc = &ctx->gc;
 	switch(op)
 	{
 		case SKL_GC_STEP:
-			if(ctx->gc.pause == 0) { ugc_step(&ctx->gc.ugc); }
+			if(gc->pause == 0) { ugc_step(&gc->ugc); }
 			break;
 		case SKL_GC_COLLECT:
-			if(ctx->gc.pause == 0) { ugc_collect(&ctx->gc.ugc); }
+			if(gc->pause == 0) { ugc_collect(&gc->ugc); }
 			break;
 		case SKL_GC_PAUSE:
-			ctx->gc.pause++;
+			gc->pause++;
 			break;
 		case SKL_GC_UNPAUSE:
-			BK_ASSERT(ctx->gc.pause > 0, "Unbalanced GC_PAUSE/GC_UNPAUSE");
-			ctx->gc.pause--;
+			BK_ASSERT(gc->pause > 0, "Unbalanced GC_PAUSE/GC_UNPAUSE");
+			gc->pause--;
 			break;
 	}
 }
@@ -96,40 +106,67 @@ skl_gc(skl_ctx_t* ctx, skl_gc_op_t op)
 void
 skl_gc_visit(ugc_t* gc, ugc_header_t* header)
 {
-	skl_ctx_t* ctx = gc->userdata;
 	if(header == NULL)
 	{
-		skl_gc_mark_obj(ctx, &ctx->gc.refs->gc_header);
-		skl_gc_mark_vm(ctx, &ctx->main_vm);
-		skl_gc_mark_vm(ctx, ctx->vm);
+		skl_gc_visit_root(gc);
 	}
 	else
 	{
-		skl_gc_header_t* obj =
-			BK_CONTAINER_OF(header, skl_gc_header_t, ugc_header);
-		obj->gc_info->mark_fn(ctx, obj);
+		skl_gc_visit_obj(gc, header);
 	}
+}
+
+void
+skl_gc_visit_root(ugc_t* ugc)
+{
+	skl_ctx_t* ctx = ugc->userdata;
+	skl_gc_t* gc = &ctx->gc;
+
+	skl_gc_mark_obj(ctx, gc->refs);
+	skl_gc_mark_obj(ctx, ctx->main_vm);
+
+	for(skl_gc_rescan_header_t* itr = gc->rescan_list.next; itr != NULL;)
+	{
+		skl_gc_rescan_header_t* next = itr->next;
+
+		skl_gc_visit_fn_t mark_fn = itr->gc_header.gc_info->mark_fn;
+		mark_fn(ctx, (skl_gc_header_t*)itr);
+		itr->next = NULL;
+
+		itr = next;
+	}
+	gc->rescan_list.next = NULL;
+}
+
+void
+skl_gc_visit_obj(ugc_t* gc, ugc_header_t* header)
+{
+	skl_gc_header_t* obj = (skl_gc_header_t*)header;
+
+	skl_gc_visit_fn_t mark_fn = obj->gc_info->mark_fn;
+	if(mark_fn != NULL) { mark_fn(gc->userdata, obj); }
 }
 
 void
 skl_gc_release(ugc_t* gc, ugc_header_t* header)
 {
 	skl_ctx_t* ctx = gc->userdata;
-	skl_gc_header_t* obj = BK_CONTAINER_OF(header, skl_gc_header_t, ugc_header);
-	obj->gc_info->free_fn(ctx, obj);
+	skl_gc_header_t* obj = (skl_gc_header_t*)header;
+
+	skl_gc_visit_fn_t free_fn = obj->gc_info->free_fn;
+	if(free_fn != NULL) { free_fn(ctx, obj); }
+
 	bk_free(ctx->cfg.allocator, obj);
 }
 
 void
-skl_gc_mark_vm(skl_ctx_t* ctx, skl_vm_t* vm)
+skl_gc_schedule_rescan(skl_ctx_t* ctx, void* obj)
 {
-	for(skl_value_t* itr = vm->sp; itr <= vm->sp_max; ++itr)
+	skl_gc_rescan_header_t* header = obj;
+	if(header->next == NULL)
 	{
-		skl_gc_mark_value(ctx, *itr);
-	}
-
-	for(skl_stack_frame_t* itr = vm->fp_min; itr <= vm->fp; ++itr)
-	{
-		skl_gc_mark_obj(ctx, &itr->proc->gc_header);
+		skl_gc_rescan_header_t* rescan_list = &ctx->gc.rescan_list;
+		header->next = rescan_list->next;
+		rescan_list->next = obj;
 	}
 }
