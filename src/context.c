@@ -10,7 +10,7 @@ skl_create_ctx(skl_config_t* cfg)
 	if(ctx == NULL) { return ctx; }
 
 	*ctx = (skl_ctx_t) {
-		.cfg = *cfg
+		.cfg = *cfg,
 	};
 
 	skl_strpool_init(ctx);
@@ -33,4 +33,17 @@ skl_destroy_ctx(skl_ctx_t* ctx)
 	skl_strpool_cleanup(ctx);
 
 	bk_free(ctx->cfg.allocator, ctx);
+}
+
+skl_exec_status_t
+skl_set_error(skl_ctx_t* ctx, skl_error_t error)
+{
+	ctx->last_error = error;
+	return SKL_EXEC_ERROR;
+}
+
+skl_error_t
+skl_last_error(skl_ctx_t* ctx)
+{
+	return ctx->last_error;
 }

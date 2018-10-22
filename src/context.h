@@ -12,6 +12,7 @@ struct skl_ctx_s
 {
 	skl_config_t cfg;
 
+	skl_error_t last_error;
 	skl_gc_t gc;
 	skl_strpool_t strpool;
 	skl_lexer_t lexer;

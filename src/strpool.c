@@ -63,6 +63,12 @@ skl_strpool_alloc(skl_ctx_t* ctx, skl_string_ref_t string)
 	}
 }
 
+skl_exec_status_t
+skl_push_string(skl_ctx_t* ctx, skl_string_ref_t str)
+{
+	return skl_vm_push_ref(ctx, SKL_VAL_STRING, skl_strpool_alloc(ctx, str));
+}
+
 
 void
 skl_string_release(skl_ctx_t* ctx, skl_gc_header_t* header)

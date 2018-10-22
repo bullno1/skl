@@ -72,10 +72,8 @@ struct skl_procedure_s
 
 struct skl_stack_frame_s
 {
-	skl_procedure_t* proc;
 	skl_instruction_t* pc;
 	skl_value_t* bp;
-
 	skl_arg_index_t num_args;
 };
 
@@ -90,7 +88,7 @@ struct skl_vm_s
 skl_vm_t*
 skl_vm_alloc(skl_ctx_t* ctx);
 
-void
-skl_vm_reset(skl_vm_t* vm);
+skl_exec_status_t
+skl_vm_push_ref(skl_ctx_t* ctx, skl_value_type_t type, void* ref);
 
 #endif

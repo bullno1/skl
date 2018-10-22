@@ -1,7 +1,8 @@
 #ifndef SICKLE_INTERNAL_H
 #define SICKLE_INTERNAL_H
 
-#include <skl.h>
+#include <skl/skl.h>
+#include <skl/utils.h>
 #include <stdbool.h>
 #include <bk/array.h>
 

@@ -3,8 +3,8 @@
 
 #include <stddef.h>
 #include <stdint.h>
-#include <string.h>
 #include <bk/macro.h>
+
 
 #if SKL_DYNAMIC == 1
 #	if SKL_BUILD == 1
@@ -16,15 +16,10 @@
 #	define SKL_API BK_EXTERN
 #endif
 
-#define SKL_STRING_REF(STR) \
-	(skl_string_ref_t) { \
-		.length = BK_STATIC_ARRAY_LEN(STR) - 1, \
-		.ptr = STR \
-	}
-
 
 struct bk_allocator_s;
 struct bk_file_s;
+
 
 typedef struct skl_ctx_s skl_ctx_t;
 typedef struct skl_config_s skl_config_t;
@@ -60,17 +55,6 @@ BK_ENUM(skl_exec_status_t, SKL_EXEC)
 	X(SKL_GC_UNPAUSE) \
 
 BK_ENUM(skl_gc_op_t, SKL_GC)
-
-typedef enum skl_reset_e
-{
-	SKL_RESET_EXEC = 1,
-	SKL_RESET_GLOBALS = 1 << 1,
-	SKL_RESET_GC = 1 << 2,
-	SKL_RESET_ALL = 0
-		| SKL_RESET_EXEC
-		| SKL_RESET_GLOBALS
-		| SKL_RESET_GC,
-} skl_reset_t;
 
 typedef enum skl_proc_flag_e
 {
@@ -126,11 +110,11 @@ skl_create_ctx(skl_config_t* cfg);
 SKL_API void
 skl_destroy_ctx(skl_ctx_t* ctx);
 
-SKL_API void
-skl_reset_ctx(skl_ctx_t* ctx, skl_reset_t reset);
-
 SKL_API skl_error_t
 skl_last_error(skl_ctx_t* ctx);
+
+SKL_API skl_exec_status_t
+skl_set_error(skl_ctx_t* ctx, skl_error_t error);
 
 // Stack manipulation
 
@@ -149,22 +133,11 @@ skl_push_native_proc(skl_ctx_t* ctx, skl_native_proc_t proc);
 SKL_API skl_exec_status_t
 skl_dup(skl_ctx_t* ctx, int index);
 
+SKL_API int
+skl_stack_len(skl_ctx_t* ctx);
+
 SKL_API skl_exec_status_t
 skl_pop(skl_ctx_t* ctx, int count);
-
-SKL_API int
-skl_get_top(skl_ctx_t* ctx);
-
-SKL_API skl_exec_status_t
-skl_set_top(skl_ctx_t* ctx, int len);
-
-// Global
-
-SKL_API skl_exec_status_t
-skl_get_global(skl_ctx_t* ctx, int index);
-
-SKL_API skl_exec_status_t
-skl_set_global(skl_ctx_t* ctx, int index);
 
 // Value inspection
 
@@ -258,16 +231,5 @@ skl_compile(skl_ctx_t* ctx, struct bk_file_s* file, skl_string_ref_t name);
 
 SKL_API skl_exec_status_t
 skl_interpret(skl_ctx_t* ctx, struct bk_file_s* file, skl_string_ref_t name);
-
-// Helper
-
-BK_INLINE skl_string_ref_t
-skl_string_ref(const char* string)
-{
-	return (skl_string_ref_t) {
-		.length = strlen(string),
-		.ptr = string
-	};
-}
 
 #endif
