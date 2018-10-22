@@ -60,6 +60,9 @@ skl_gc_alloc(skl_ctx_t* ctx, size_t size, const skl_gc_info_t* gc_info)
 
 	ugc_register(&ctx->gc.ugc, &obj->ugc_header);
 
+	// An allocation means there could be new objects stored to the stack
+	if(ctx->vm != NULL) { skl_gc_schedule_rescan(ctx, ctx->vm); }
+
 	return obj;
 }
 
