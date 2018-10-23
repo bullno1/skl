@@ -69,6 +69,19 @@ skl_push_string(skl_ctx_t* ctx, skl_string_ref_t str)
 	skl_vm_push_ref(ctx, SKL_VAL_STRING, skl_strpool_alloc(ctx, str));
 }
 
+skl_exec_status_t
+skl_to_string(skl_ctx_t* ctx, int index, skl_string_ref_t* ref)
+{
+	skl_value_t value;
+	SKL_CHECK(skl_type_check(ctx, SKL_VAL_STRING, index, &value));
+
+	skl_string_t* string = skl_value_as_ref(value);
+	ref->ptr = string->content;
+	ref->length = string->length;
+
+	return SKL_EXEC_OK;
+}
+
 
 void
 skl_string_release(skl_ctx_t* ctx, skl_gc_header_t* header)

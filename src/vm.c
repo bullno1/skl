@@ -64,9 +64,8 @@ skl_push_number(skl_ctx_t* ctx, double number)
 void
 skl_dup(skl_ctx_t* ctx, int index)
 {
-	skl_vm_t* vm = ctx->vm;
-	skl_value_t* value = skl_vm_stack_addr(vm, index);
-	SKL_ASSERT(ctx, vm->fp->bp <= value && value < vm->sp, "Invalid index");
+	skl_value_t* value;
+	SKL_SAFE_STACK_ADDR(value, ctx, index);
 
 	skl_vm_push_value(ctx, *value);
 }
@@ -74,11 +73,10 @@ skl_dup(skl_ctx_t* ctx, int index)
 void
 skl_replace(skl_ctx_t* ctx, int index)
 {
-	skl_vm_t* vm = ctx->vm;
-	skl_value_t* value = skl_vm_stack_addr(vm, index);
-	SKL_ASSERT(ctx, vm->fp->bp <= value && value < vm->sp, "Invalid index");
+	skl_value_t* value;
+	SKL_SAFE_STACK_ADDR(value, ctx, index);
 
-	*value = *(--vm->sp);
+	*value = *(--ctx->vm->sp);
 }
 
 bool
@@ -118,24 +116,10 @@ skl_resize_stack(skl_ctx_t* ctx, int count)
 skl_value_type_t
 skl_type(skl_ctx_t* ctx, int index)
 {
-	skl_vm_t* vm = ctx->vm;
-	skl_value_t* value = skl_vm_stack_addr(vm, index);
-	SKL_ASSERT(ctx, vm->fp->bp <= value && value < vm->sp, "Invalid index");
+	skl_value_t* value;
+	SKL_SAFE_STACK_ADDR(value, ctx, index);
 
 	return skl_value_type(*value);
-}
-
-skl_exec_status_t
-skl_to_string(skl_ctx_t* ctx, int index, skl_string_ref_t* ref)
-{
-	skl_value_t value;
-	SKL_CHECK(skl_type_check(ctx, SKL_VAL_STRING, index, &value));
-
-	skl_string_t* string = skl_value_as_ref(value);
-	ref->ptr = string->content;
-	ref->length = string->length;
-
-	return SKL_EXEC_OK;
 }
 
 skl_exec_status_t
@@ -152,9 +136,8 @@ skl_to_number(skl_ctx_t* ctx, int index, double* number)
 skl_exec_status_t
 skl_type_check(skl_ctx_t* ctx, skl_value_type_t type, int index, skl_value_t* out)
 {
-	skl_vm_t* vm = ctx->vm;
-	skl_value_t* value = skl_vm_stack_addr(vm, index);
-	SKL_ASSERT(ctx, vm->fp->bp <= value && value < vm->sp, "Invalid index");
+	skl_value_t* value;
+	SKL_SAFE_STACK_ADDR(value, ctx, index);
 
 	if(skl_value_type(*value) == type)
 	{

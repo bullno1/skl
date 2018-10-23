@@ -5,12 +5,18 @@
 #include "opcode.h"
 #include "gc.h"
 #include "value.h"
-#include "string.h"
 #include "box.h"
 
 
+#define SKL_SAFE_STACK_ADDR(ADDR, CTX, INDEX) \
+	do { \
+		skl_vm_t* vm = ctx->vm; \
+		ADDR = skl_vm_stack_addr(vm, (INDEX)); \
+		SKL_ASSERT((CTX), vm->fp->bp <= (ADDR) && (ADDR) < vm->sp, "Invalid index") \
+	} while(0);
+
+
 typedef struct skl_vm_s skl_vm_t;
-typedef struct skl_procedure_s skl_procedure_t;
 typedef struct skl_code_chunk_s skl_code_chunk_t;
 typedef struct skl_debug_info_s skl_debug_info_t;
 typedef struct skl_import_s skl_import_t;

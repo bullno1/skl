@@ -3,7 +3,6 @@
 
 #include <skl/skl.h>
 #include <skl/utils.h>
-#include <bk/array.h>
 #ifndef SKL_NO_NAN_BOXING
 #include <nanbox/nanbox.h>
 #endif
@@ -12,8 +11,12 @@
 #define SKL_ASSERT(CTX, COND, MSG) \
 	do { if(!(COND)) { skl_panic(CTX, SKL_STRING_REF(MSG)); } } while(0);
 
+
 typedef struct skl_string_s skl_string_t;
 typedef struct skl_list_s skl_list_t;
+typedef struct skl_map_s skl_map_t;
+typedef struct skl_box_s skl_box_t;
+typedef struct skl_procedure_s skl_procedure_t;
 #ifdef SKL_NO_NAN_BOXING
 typedef struct skl_value_s skl_value_t;
 #else

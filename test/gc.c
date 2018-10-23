@@ -1,5 +1,6 @@
 #include "../src/context.h"
 #include "../src/list.h"
+#include <bk/array.h>
 #include "test_helper.h"
 
 

@@ -99,7 +99,7 @@ skl_gc(skl_ctx_t* ctx, skl_gc_op_t op)
 			gc->pause++;
 			break;
 		case SKL_GC_UNPAUSE:
-			BK_ASSERT(gc->pause > 0, "Unbalanced GC_PAUSE/GC_UNPAUSE");
+			SKL_ASSERT(ctx, gc->pause > 0, "Unbalanced GC_PAUSE/GC_UNPAUSE");
 			gc->pause--;
 			break;
 	}

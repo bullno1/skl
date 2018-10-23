@@ -23,7 +23,7 @@ skl_create_ctx(const skl_config_t* cfg)
 
 	ctx->vm = NULL;
 	ctx->main_vm = skl_vm_alloc(ctx);
-	BK_ASSERT(ctx->main_vm != NULL, "Could not allocate VM");
+	SKL_ASSERT(ctx, ctx->main_vm != NULL, "Could not allocate main VM");
 	ctx->vm = ctx->main_vm;
 	skl_lexer_init(&ctx->lexer, ctx);
 

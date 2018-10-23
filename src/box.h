@@ -6,9 +6,6 @@
 #include "value.h"
 
 
-typedef struct skl_box_s skl_box_t;
-
-
 struct skl_box_s
 {
 	skl_gc_header_t gc_header;

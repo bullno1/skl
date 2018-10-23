@@ -1,7 +1,8 @@
 #include "lexer.h"
-#include "context.h"
 #include <ctype.h>
 #include <bk/fs.h>
+#include <bk/array.h>
+#include "context.h"
 
 
 static skl_lexer_error_t
