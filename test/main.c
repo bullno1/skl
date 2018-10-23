@@ -6,6 +6,7 @@
 	X(lexer) \
 	X(gc) \
 	X(strpool) \
+	X(vm) \
 
 #define DECLARE_SUITE(S) extern MunitSuite S;
 #define IMPORT_SUITE(S) S,

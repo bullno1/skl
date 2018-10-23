@@ -41,6 +41,6 @@ static MunitTest tests[] = {
 };
 
 MunitSuite strpool = {
-	.prefix = "/gc",
+	.prefix = "/strpool",
 	.tests = tests
 };
