@@ -144,11 +144,11 @@ skl_len(skl_ctx_t* ctx, int index);
 
 // Simple type
 
-SKL_API skl_exec_status_t
-skl_to_string(skl_ctx_t* ctx, int index, skl_string_ref_t* ref);
+SKL_API skl_string_ref_t
+skl_to_string(skl_ctx_t* ctx, int index);
 
-SKL_API skl_exec_status_t
-skl_to_number(skl_ctx_t* ctx, int index, double* number);
+SKL_API double
+skl_to_number(skl_ctx_t* ctx, int index);
 
 // List
 

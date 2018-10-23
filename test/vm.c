@@ -38,12 +38,10 @@ stack(const MunitParameter params[], void* fixture)
 	skl_assert_enum(skl_value_type_t, SKL_VAL_NULL, ==, skl_type(ctx, -1));
 	skl_assert_enum(skl_value_type_t, SKL_VAL_NULL, ==, skl_type(ctx, -2));
 
-	skl_string_ref_t ref;
-	skl_assert_enum(skl_exec_status_t, SKL_EXEC_OK, ==, skl_to_string(ctx, 1, &ref));
+	skl_string_ref_t ref = skl_to_string(ctx, 1);
 	skl_assert_string_ref_equal(SKL_STRING_REF("wat"), ref);
 
-	double number;
-	skl_assert_enum(skl_exec_status_t, SKL_EXEC_OK, ==, skl_to_number(ctx, 2, &number));
+	double number = skl_to_number(ctx, 2);
 	munit_assert_double(4.9, ==, number);
 
 	return MUNIT_OK;

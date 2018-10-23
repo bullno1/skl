@@ -11,12 +11,6 @@
 		.ptr = STR \
 	}
 
-#define SKL_CHECK(OP) \
-	do { \
-		skl_exec_status_t status = OP; \
-		if(status != SKL_EXEC_OK) { return status; } \
-	} while(0)
-
 BK_INLINE skl_string_ref_t
 skl_string_ref(const char* string)
 {

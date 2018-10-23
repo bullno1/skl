@@ -122,32 +122,14 @@ skl_type(skl_ctx_t* ctx, int index)
 	return skl_value_type(*value);
 }
 
-skl_exec_status_t
-skl_to_number(skl_ctx_t* ctx, int index, double* number)
-{
-	skl_value_t value;
-	SKL_CHECK(skl_type_check(ctx, SKL_VAL_NUMBER, index, &value));
-
-	*number = skl_value_as_number(value);
-
-	return SKL_EXEC_OK;
-}
-
-skl_exec_status_t
-skl_type_check(skl_ctx_t* ctx, skl_value_type_t type, int index, skl_value_t* out)
+double
+skl_to_number(skl_ctx_t* ctx, int index)
 {
 	skl_value_t* value;
 	SKL_SAFE_STACK_ADDR(value, ctx, index);
+	SKL_ASSERT(ctx, skl_value_type(*value) == SKL_VAL_NUMBER, "Type error");
 
-	if(skl_value_type(*value) == type)
-	{
-		*out = *value;
-		return SKL_EXEC_OK;
-	}
-	else
-	{
-		return skl_error(ctx, SKL_STRING_REF("Type error"));
-	}
+	return skl_value_as_number(*value);
 }
 
 
