@@ -3,6 +3,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include <stdbool.h>
 #include <bk/macro.h>
 
 
@@ -67,14 +68,16 @@ typedef enum skl_dump_flag_e
 } skl_dump_flag_t;
 
 typedef skl_exec_status_t(*skl_native_proc_t)(skl_ctx_t*);
+typedef void(*skl_panic_fn_t)(skl_ctx_t* ctx, skl_string_ref_t msg);
 
 
 struct skl_config_s
 {
 	struct bk_allocator_s* allocator;
+	skl_panic_fn_t panic_handler;
 
-	uint32_t operand_stack_size;
-	uint32_t call_stack_size;
+	uint16_t operand_stack_size;
+	uint16_t call_stack_size;
 };
 
 struct skl_string_ref_s
@@ -95,49 +98,42 @@ struct skl_loc_range_s
 	skl_location_t end;
 };
 
-struct skl_error_s
-{
-	skl_string_ref_t type;
-	skl_string_ref_t file;
-	skl_loc_range_t location;
-};
-
 // Context
 
 SKL_API skl_ctx_t*
-skl_create_ctx(skl_config_t* cfg);
+skl_create_ctx(const skl_config_t* cfg);
 
 SKL_API void
 skl_destroy_ctx(skl_ctx_t* ctx);
 
-SKL_API skl_error_t
-skl_last_error(skl_ctx_t* ctx);
-
-SKL_API skl_exec_status_t
-skl_set_error(skl_ctx_t* ctx, skl_error_t error);
-
 // Stack manipulation
 
-SKL_API skl_exec_status_t
-skl_push_null(skl_ctx_t* ctx);
-
-SKL_API skl_exec_status_t
-skl_push_number(skl_ctx_t* ctx, double number);
-
-SKL_API skl_exec_status_t
-skl_push_string(skl_ctx_t* ctx, skl_string_ref_t str);
-
-SKL_API skl_exec_status_t
-skl_push_native_proc(skl_ctx_t* ctx, skl_native_proc_t proc);
-
-SKL_API skl_exec_status_t
-skl_dup(skl_ctx_t* ctx, int index);
+SKL_API bool
+skl_check_stack(skl_ctx_t* ctx, int count);
 
 SKL_API int
 skl_stack_len(skl_ctx_t* ctx);
 
-SKL_API skl_exec_status_t
-skl_pop(skl_ctx_t* ctx, int count);
+SKL_API void
+skl_resize_stack(skl_ctx_t* ctx, int size);
+
+SKL_API void
+skl_push_null(skl_ctx_t* ctx);
+
+SKL_API void
+skl_push_number(skl_ctx_t* ctx, double number);
+
+SKL_API void
+skl_push_string(skl_ctx_t* ctx, skl_string_ref_t str);
+
+SKL_API void
+skl_push_native_proc(skl_ctx_t* ctx, skl_native_proc_t proc);
+
+SKL_API void
+skl_dup(skl_ctx_t* ctx, int index);
+
+SKL_API void
+skl_replace(skl_ctx_t* ctx, int index);
 
 // Value inspection
 

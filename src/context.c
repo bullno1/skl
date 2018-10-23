@@ -1,10 +1,15 @@
 #include "context.h"
+#include <stdio.h>
 #include <bk/allocator.h>
 #include "gc.h"
 
 
+static void
+skl_default_panic_handler(skl_ctx_t* ctx, skl_string_ref_t msg);
+
+
 skl_ctx_t*
-skl_create_ctx(skl_config_t* cfg)
+skl_create_ctx(const skl_config_t* cfg)
 {
 	skl_ctx_t* ctx = BK_UNSAFE_NEW(cfg->allocator, skl_ctx_t);
 	if(ctx == NULL) { return ctx; }
@@ -35,15 +40,20 @@ skl_destroy_ctx(skl_ctx_t* ctx)
 	bk_free(ctx->cfg.allocator, ctx);
 }
 
-skl_exec_status_t
-skl_set_error(skl_ctx_t* ctx, skl_error_t error)
+void
+skl_panic(skl_ctx_t* ctx, skl_string_ref_t msg)
 {
-	ctx->last_error = error;
-	return SKL_EXEC_ERROR;
+	skl_panic_fn_t panic_handler = ctx->cfg.panic_handler;
+	if(panic_handler == NULL) { panic_handler = skl_default_panic_handler; }
+
+	skl_default_panic_handler(ctx, msg);
 }
 
-skl_error_t
-skl_last_error(skl_ctx_t* ctx)
+
+void
+skl_default_panic_handler(skl_ctx_t* ctx, skl_string_ref_t msg)
 {
-	return ctx->last_error;
+	(void)ctx;
+	printf("skl_context<0x%p>: %.*s\n", (void*)ctx, (int)msg.length, msg.ptr);
+	abort();
 }

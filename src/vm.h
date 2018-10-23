@@ -88,7 +88,7 @@ struct skl_vm_s
 skl_vm_t*
 skl_vm_alloc(skl_ctx_t* ctx);
 
-skl_exec_status_t
+void
 skl_vm_push_ref(skl_ctx_t* ctx, skl_value_type_t type, void* ref);
 
 #endif

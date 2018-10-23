@@ -9,15 +9,11 @@ skl_vm_mark(skl_ctx_t* ctx, skl_gc_header_t* header);
 static void
 skl_vm_release(skl_ctx_t* ctx, skl_gc_header_t* header);
 
-static skl_exec_status_t
+static void
 skl_vm_push_value(skl_ctx_t* ctx, skl_value_t value);
 
 static skl_value_t*
-skl_vm_stack_addr(skl_vm_t* vm, int index)
-{
-	skl_value_t* base_addr = index >= 0 ? vm->fp->bp : vm->sp;
-	return base_addr + index;
-}
+skl_vm_stack_addr(const skl_vm_t* vm, int index);
 
 
 static const skl_gc_info_t skl_vm_gc_info = {
@@ -35,7 +31,7 @@ skl_vm_alloc(skl_ctx_t* ctx)
 	bk_allocator_t* allocator = cfg->allocator;
 
 	vm->sp_min = bk_malloc(allocator, sizeof(*vm->sp) * cfg->operand_stack_size);
-	vm->sp_max = vm->sp_min + cfg->operand_stack_size - 1;
+	vm->sp_max = vm->sp_min + cfg->operand_stack_size; // 1 past allocated area
 	vm->sp = vm->sp_min;
 
 	vm->fp_min = bk_malloc(allocator, sizeof(*vm->fp) * cfg->call_stack_size);
@@ -49,34 +45,51 @@ skl_vm_alloc(skl_ctx_t* ctx)
 	return vm;
 }
 
-skl_exec_status_t
+void
 skl_vm_push_ref(skl_ctx_t* ctx, skl_value_type_t type, void* ref)
 {
-	SKL_ASSERT(ctx, ref != NULL, "skl.out-of-memory");
-	return skl_vm_push_value(ctx, skl_value_make_ref(type, ref));
+	SKL_ASSERT(ctx, ref != NULL, "Out of memory");
+	skl_vm_push_value(ctx, skl_value_make_ref(type, ref));
 }
 
-skl_exec_status_t
+void
 skl_push_null(skl_ctx_t* ctx)
 {
-	return skl_vm_push_value(ctx, skl_value_make_null());
+	skl_vm_push_value(ctx, skl_value_make_null());
 }
 
-skl_exec_status_t
+void
 skl_push_number(skl_ctx_t* ctx, double number)
 {
-	return skl_vm_push_value(ctx, skl_value_make_number(number));
+	skl_vm_push_value(ctx, skl_value_make_number(number));
 }
 
-skl_exec_status_t
+void
 skl_dup(skl_ctx_t* ctx, int index)
 {
-	int stack_len = skl_stack_len(ctx);
-	SKL_ASSERT(
-		ctx, -stack_len <= index || index < stack_len, "skl.invalid-index"
-	);
+	skl_vm_t* vm = ctx->vm;
+	skl_value_t* value = skl_vm_stack_addr(vm, index);
+	SKL_ASSERT(ctx, vm->fp->bp <= value && value < vm->sp, "Invalid index");
 
-	return skl_vm_push_value(ctx, *skl_vm_stack_addr(ctx->vm, index));
+	skl_vm_push_value(ctx, *value);
+}
+
+void
+skl_replace(skl_ctx_t* ctx, int index)
+{
+	skl_vm_t* vm = ctx->vm;
+	skl_value_t* value = skl_vm_stack_addr(vm, index);
+	SKL_ASSERT(ctx, vm->fp->bp <= value && value < vm->sp, "Invalid index");
+
+	*value = *(--vm->sp);
+}
+
+bool
+skl_check_stack(skl_ctx_t* ctx, int count)
+{
+	skl_vm_t* vm = ctx->vm;
+	skl_value_t* next_sp = vm->sp + count;
+	return vm->fp->bp <= next_sp && next_sp <= vm->sp_max;
 }
 
 int
@@ -86,15 +99,33 @@ skl_stack_len(skl_ctx_t* ctx)
 	return vm->sp - vm->fp->bp;
 }
 
-skl_exec_status_t
-skl_pop(skl_ctx_t* ctx, int count)
+void
+skl_resize_stack(skl_ctx_t* ctx, int count)
 {
-	SKL_ASSERT(
-		ctx, 0 <= count && count <= skl_stack_len(ctx), "skl.invalid-index"
-	);
+	skl_vm_t* vm = ctx->vm;
+	skl_value_t* target = skl_vm_stack_addr(vm, count);
+	SKL_ASSERT(ctx, vm->fp->bp <= target && target <= vm->sp_max, "Invalid index");
 
-	ctx->vm->sp -= count;
-	return SKL_EXEC_OK;
+	if(target > vm->sp)
+	{
+		skl_value_t null = skl_value_make_null();
+		for(skl_value_t* itr = vm->sp; itr <= target; ++itr)
+		{
+			*itr = null;
+		}
+	}
+
+	vm->sp = target;
+}
+
+skl_value_type_t
+skl_type(skl_ctx_t* ctx, int index)
+{
+	skl_vm_t* vm = ctx->vm;
+	skl_value_t* value = skl_vm_stack_addr(vm, index);
+	SKL_ASSERT(ctx, vm->fp->bp <= value && value < vm->sp, "Invalid index");
+
+	return skl_value_type(*value);
 }
 
 
@@ -118,12 +149,18 @@ skl_vm_release(skl_ctx_t* ctx, skl_gc_header_t* header)
 	bk_free(allocator, vm->fp_min);
 }
 
-skl_exec_status_t
+static skl_value_t*
+skl_vm_stack_addr(const skl_vm_t* vm, int index)
+{
+	skl_value_t* base_addr = index >= 0 ? vm->fp->bp : vm->sp;
+	return base_addr + index;
+}
+
+void
 skl_vm_push_value(skl_ctx_t* ctx, skl_value_t value)
 {
 	skl_vm_t* vm = ctx->vm;
-	SKL_ASSERT(ctx, vm->sp <= vm->sp_max, "skl.stack-overflow");
+	SKL_ASSERT(ctx, vm->sp < vm->sp_max, "Stack overflow");
 
 	*(vm->sp++) = value;
-	return SKL_EXEC_OK;
 }
