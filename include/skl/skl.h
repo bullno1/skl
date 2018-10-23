@@ -25,7 +25,6 @@ struct bk_file_s;
 typedef struct skl_ctx_s skl_ctx_t;
 typedef struct skl_config_s skl_config_t;
 typedef struct skl_string_ref_s skl_string_ref_t;
-typedef struct skl_error_s skl_error_t;
 typedef struct skl_location_s skl_location_t;
 typedef struct skl_loc_range_s skl_loc_range_t;
 typedef unsigned int skl_gc_handle_t;

@@ -12,9 +12,6 @@ skl_vm_release(skl_ctx_t* ctx, skl_gc_header_t* header);
 static void
 skl_vm_push_value(skl_ctx_t* ctx, skl_value_t value);
 
-static skl_value_t*
-skl_vm_stack_addr(const skl_vm_t* vm, int index);
-
 
 static const skl_gc_info_t skl_vm_gc_info = {
 	.mark_fn = skl_vm_mark,
@@ -128,6 +125,48 @@ skl_type(skl_ctx_t* ctx, int index)
 	return skl_value_type(*value);
 }
 
+skl_exec_status_t
+skl_to_string(skl_ctx_t* ctx, int index, skl_string_ref_t* ref)
+{
+	skl_value_t value;
+	SKL_CHECK(skl_type_check(ctx, SKL_VAL_STRING, index, &value));
+
+	skl_string_t* string = skl_value_as_ref(value);
+	ref->ptr = string->content;
+	ref->length = string->length;
+
+	return SKL_EXEC_OK;
+}
+
+skl_exec_status_t
+skl_to_number(skl_ctx_t* ctx, int index, double* number)
+{
+	skl_value_t value;
+	SKL_CHECK(skl_type_check(ctx, SKL_VAL_NUMBER, index, &value));
+
+	*number = skl_value_as_number(value);
+
+	return SKL_EXEC_OK;
+}
+
+skl_exec_status_t
+skl_type_check(skl_ctx_t* ctx, skl_value_type_t type, int index, skl_value_t* out)
+{
+	skl_vm_t* vm = ctx->vm;
+	skl_value_t* value = skl_vm_stack_addr(vm, index);
+	SKL_ASSERT(ctx, vm->fp->bp <= value && value < vm->sp, "Invalid index");
+
+	if(skl_value_type(*value) == type)
+	{
+		*out = *value;
+		return SKL_EXEC_OK;
+	}
+	else
+	{
+		return skl_error(ctx, SKL_STRING_REF("Type error"));
+	}
+}
+
 
 void
 skl_vm_mark(skl_ctx_t* ctx, skl_gc_header_t* header)
@@ -140,6 +179,13 @@ skl_vm_mark(skl_ctx_t* ctx, skl_gc_header_t* header)
 	}
 }
 
+skl_value_t*
+skl_vm_stack_addr(const skl_vm_t* vm, int index)
+{
+	skl_value_t* base_addr = index >= 0 ? vm->fp->bp : vm->sp;
+	return base_addr + index;
+}
+
 void
 skl_vm_release(skl_ctx_t* ctx, skl_gc_header_t* header)
 {
@@ -147,13 +193,6 @@ skl_vm_release(skl_ctx_t* ctx, skl_gc_header_t* header)
 	skl_vm_t* vm = (skl_vm_t*)header;
 	bk_free(allocator, vm->sp_min);
 	bk_free(allocator, vm->fp_min);
-}
-
-static skl_value_t*
-skl_vm_stack_addr(const skl_vm_t* vm, int index)
-{
-	skl_value_t* base_addr = index >= 0 ? vm->fp->bp : vm->sp;
-	return base_addr + index;
 }
 
 void

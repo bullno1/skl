@@ -26,4 +26,11 @@ skl_string_ref(const char* string)
 	};
 }
 
+BK_INLINE skl_exec_status_t
+skl_error(skl_ctx_t* ctx, skl_string_ref_t error)
+{
+	skl_push_string(ctx, error);
+	return SKL_EXEC_ERROR;
+}
+
 #endif

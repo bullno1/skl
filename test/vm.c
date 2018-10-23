@@ -19,6 +19,33 @@ stack(const MunitParameter params[], void* fixture)
 	skl_assert_enum(skl_value_type_t, SKL_VAL_STRING, ==, skl_type(ctx, 1));
 	skl_assert_enum(skl_value_type_t, SKL_VAL_NUMBER, ==, skl_type(ctx, 2));
 
+	skl_assert_enum(skl_value_type_t, SKL_VAL_NULL, ==, skl_type(ctx, -3));
+	skl_assert_enum(skl_value_type_t, SKL_VAL_STRING, ==, skl_type(ctx, -2));
+	skl_assert_enum(skl_value_type_t, SKL_VAL_NUMBER, ==, skl_type(ctx, -1));
+
+	skl_dup(ctx, 1);
+	munit_assert_int(4, ==, skl_stack_len(ctx));
+	skl_assert_enum(skl_value_type_t, SKL_VAL_STRING, ==, skl_type(ctx, -1));
+	skl_resize_stack(ctx, -1);
+	munit_assert_int(3, ==, skl_stack_len(ctx));
+	skl_assert_enum(skl_value_type_t, SKL_VAL_NUMBER, ==, skl_type(ctx, -1));
+
+	skl_resize_stack(ctx, 3);
+	munit_assert_int(3, ==, skl_stack_len(ctx));
+
+	skl_resize_stack(ctx, 5);
+	munit_assert_int(5, ==, skl_stack_len(ctx));
+	skl_assert_enum(skl_value_type_t, SKL_VAL_NULL, ==, skl_type(ctx, -1));
+	skl_assert_enum(skl_value_type_t, SKL_VAL_NULL, ==, skl_type(ctx, -2));
+
+	skl_string_ref_t ref;
+	skl_assert_enum(skl_exec_status_t, SKL_EXEC_OK, ==, skl_to_string(ctx, 1, &ref));
+	skl_assert_string_ref_equal(SKL_STRING_REF("wat"), ref);
+
+	double number;
+	skl_assert_enum(skl_exec_status_t, SKL_EXEC_OK, ==, skl_to_number(ctx, 2, &number));
+	munit_assert_double(4.9, ==, number);
+
 	return MUNIT_OK;
 }
 
