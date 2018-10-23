@@ -10,7 +10,7 @@ static void
 skl_string_release(skl_ctx_t* ctx, skl_gc_header_t* header);
 
 
-static const skl_gc_info_t skl_string_gc_info = {
+const skl_gc_info_t skl_string_gc_info = {
 	.free_fn = skl_string_release,
 };
 

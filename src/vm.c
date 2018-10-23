@@ -13,7 +13,7 @@ static void
 skl_vm_push_value(skl_ctx_t* ctx, skl_value_t value);
 
 
-static const skl_gc_info_t skl_vm_gc_info = {
+const skl_gc_info_t skl_vm_gc_info = {
 	.mark_fn = skl_vm_mark,
 	.free_fn = skl_vm_release,
 };

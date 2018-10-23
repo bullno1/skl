@@ -10,3 +10,6 @@
 [submodule "deps/xxHash"]
 	path = deps/xxHash
 	url = https://github.com/Cyan4973/xxHash.git
+[submodule "deps/nanbox"]
+	path = deps/nanbox
+	url = https://github.com/zuiderkwast/nanbox.git

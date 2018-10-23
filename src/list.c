@@ -9,7 +9,7 @@ static void
 skl_list_release(skl_ctx_t* ctx, skl_gc_header_t* header);
 
 
-static const skl_gc_info_t skl_list_gc_info = {
+const skl_gc_info_t skl_list_gc_info = {
 	.mark_fn = skl_list_mark,
 	.free_fn = skl_list_release,
 };
