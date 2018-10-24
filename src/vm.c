@@ -124,7 +124,7 @@ skl_check_type(skl_ctx_t* ctx, int index, skl_value_type_t type)
 }
 
 double
-skl_to_number(skl_ctx_t* ctx, int index)
+skl_as_number(skl_ctx_t* ctx, int index)
 {
 	skl_value_t* value;
 	SKL_SAFE_STACK_ADDR(value, ctx, index);
