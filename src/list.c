@@ -11,6 +11,16 @@ skl_list_mark(skl_ctx_t* ctx, skl_gc_header_t* header);
 static void
 skl_list_release(skl_ctx_t* ctx, skl_gc_header_t* header);
 
+static int
+skl_list_normalize_index(skl_ctx_t* ctx, skl_list_t* list, int index)
+{
+	int len = skl_list_len(list);
+	if(index < 0) { index += len; }
+	SKL_ASSERT(ctx, 0 <= index && index < len, "Invalid list index");
+
+	return index;
+}
+
 
 const skl_gc_info_t skl_list_gc_info = {
 	.mark_fn = skl_list_mark,
@@ -35,19 +45,29 @@ skl_value_t
 skl_list_int_get(skl_ctx_t* ctx, skl_list_t* list, int index)
 {
 	(void)ctx;
+	index = skl_list_normalize_index(ctx, list, index);
 	return list->elements[index];
 }
 
 void
 skl_list_int_set(skl_ctx_t* ctx, skl_list_t* list, int index, skl_value_t value)
 {
+	index = skl_list_normalize_index(ctx, list, index);
 	list->elements[index] = value;
+	skl_gc_write_barrier(ctx, &list->gc_header, value);
+}
+
+void
+skl_list_int_push(skl_ctx_t* ctx, skl_list_t* list, skl_value_t value)
+{
+	bk_array_push(list->elements, value);
 	skl_gc_write_barrier(ctx, &list->gc_header, value);
 }
 
 void
 skl_list_int_insert(skl_ctx_t* ctx, skl_list_t* list, int index, skl_value_t value)
 {
+	index = skl_list_normalize_index(ctx, list, index);
 	bk_array_insert(list->elements, index, value);
 	skl_gc_write_barrier(ctx, &list->gc_header, value);
 }
@@ -56,6 +76,7 @@ void
 skl_list_int_delete(skl_ctx_t* ctx, skl_list_t* list, int index)
 {
 	(void)ctx;
+	index = skl_list_normalize_index(ctx, list, index);
 	bk_array_remove(list, index);
 }
 
@@ -63,6 +84,7 @@ void
 skl_list_int_quick_delete(skl_ctx_t* ctx, skl_list_t* list, int index)
 {
 	(void)ctx;
+	index = skl_list_normalize_index(ctx, list, index);
 	bk_array_quick_remove(list, index);
 }
 

@@ -22,7 +22,10 @@ void
 skl_list_int_set(skl_ctx_t* ctx, skl_list_t* list, int index, skl_value_t value);
 
 void
-skl_list_int_insert(skl_ctx_t* ctx, skl_list_t* list, int index, skl_value_t vaue);
+skl_list_int_push(skl_ctx_t* ctx, skl_list_t* list, skl_value_t value);
+
+void
+skl_list_int_insert(skl_ctx_t* ctx, skl_list_t* list, int index, skl_value_t value);
 
 void
 skl_list_int_delete(skl_ctx_t* ctx, skl_list_t* list, int index);

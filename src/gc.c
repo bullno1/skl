@@ -123,27 +123,28 @@ skl_gc(skl_ctx_t* ctx, skl_gc_op_t op)
 }
 
 skl_gc_handle_t
-skl_gc_ref(skl_ctx_t* ctx, int index);
-/*{*/
-	/*skl_value_t* value;*/
-	/*SKL_SAFE_STACK_ADDR(value, ctx, index);*/
+skl_gc_ref(skl_ctx_t* ctx, int index)
+{
+	skl_value_t* value;
+	SKL_SAFE_STACK_ADDR(value, ctx, index);
 
-	/*skl_gc_t* gc = &ctx->gc;*/
-	/*size_t num_free_handles = bk_array_len(gc->free_ref_handles);*/
-	/*if(num_free_handles > 0)*/
-	/*{*/
-		/*skl_gc_handle_t handle = bk_array_pop(gc->free_ref_handles);*/
-		/*skl_list_int_set(ctx, gc->refs, handle, *value);*/
-		/*return handle;*/
-	/*}*/
-	/*else*/
-	/*{*/
-		/*skl_gc_handle_t handle = skl_list_int_len(gc->refs);*/
-		/*skl_list_int_push(ctx, list, *value);*/
-		/*return handle;*/
-	/*}*/
-/*}*/
+	skl_gc_t* gc = &ctx->gc;
+	size_t num_free_handles = bk_array_len(gc->free_ref_handles);
+	skl_gc_handle_t handle;
 
+	if(num_free_handles > 0)
+	{
+		handle = bk_array_pop(gc->free_ref_handles);
+		skl_list_int_set(ctx, gc->refs, handle, *value);
+	}
+	else
+	{
+		handle = skl_list_len(gc->refs);
+		skl_list_int_push(ctx, gc->refs, *value);
+	}
+
+	return handle;
+}
 
 void
 skl_gc_deref(skl_ctx_t* ctx, skl_gc_handle_t handle)
@@ -151,7 +152,6 @@ skl_gc_deref(skl_ctx_t* ctx, skl_gc_handle_t handle)
 	skl_value_t value = skl_list_int_get(ctx, ctx->gc.refs, handle);
 	skl_vm_push_value(ctx, value);
 }
-
 
 void
 skl_gc_unref(skl_ctx_t* ctx, skl_gc_handle_t handle)
