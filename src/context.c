@@ -1,6 +1,7 @@
 #include "context.h"
 #include <stdio.h>
 #include <bk/allocator.h>
+#include "vm.h"
 #include "gc.h"
 
 

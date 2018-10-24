@@ -4,7 +4,6 @@
 #include "common.h"
 #include "lexer.h"
 #include "gc.h"
-#include "vm.h"
 #include "strpool.h"
 
 

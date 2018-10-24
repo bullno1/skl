@@ -17,6 +17,7 @@ typedef struct skl_list_s skl_list_t;
 typedef struct skl_map_s skl_map_t;
 typedef struct skl_box_s skl_box_t;
 typedef struct skl_procedure_s skl_procedure_t;
+typedef struct skl_vm_s skl_vm_t;
 #ifdef SKL_NO_NAN_BOXING
 typedef struct skl_value_s skl_value_t;
 #else

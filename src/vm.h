@@ -24,7 +24,6 @@
 	} while(0);
 
 
-typedef struct skl_vm_s skl_vm_t;
 typedef struct skl_code_chunk_s skl_code_chunk_t;
 typedef struct skl_debug_info_s skl_debug_info_t;
 typedef struct skl_import_s skl_import_t;

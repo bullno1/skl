@@ -152,23 +152,23 @@ skl_to_number(skl_ctx_t* ctx, int index);
 
 // List
 
-SKL_API skl_exec_status_t
+SKL_API void
 skl_list_new(skl_ctx_t* ctx, int capacity);
 
-SKL_API skl_exec_status_t
+SKL_API void
 skl_list_get(skl_ctx_t* ctx, int index, int n);
 
-SKL_API skl_exec_status_t
+SKL_API void
 skl_list_set(skl_ctx_t* ctx, int index, int n);
 
-SKL_API skl_exec_status_t
-skl_list_resize(skl_ctx_t* ctx, int index);
+SKL_API void
+skl_list_resize(skl_ctx_t* ctx, int index, int size);
 
-SKL_API skl_exec_status_t
-skl_list_push(skl_ctx_t* ctx, int index);
+SKL_API void
+skl_list_insert(skl_ctx_t* ctx, int index, int n);
 
-SKL_API skl_exec_status_t
-skl_list_pop(skl_ctx_t* ctx, int index);
+SKL_API void
+skl_list_delete(skl_ctx_t* ctx, int index, int n);
 
 // Box
 

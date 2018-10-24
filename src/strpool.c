@@ -1,6 +1,7 @@
 #include <bk/allocator.h>
 #include "context.h"
 #include "string.h"
+#include "vm.h"
 #define XXH_PRIVATE_API
 #define XXH_NAMESPACE skl_
 #include <xxHash/xxhash.h>
