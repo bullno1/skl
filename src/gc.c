@@ -3,7 +3,6 @@
 #define UGC_DECL BK_INLINE
 #include <ugc/ugc.h>
 #include "gc.h"
-#include <bk/assert.h>
 #include <bk/allocator.h>
 #include <bk/array.h>
 #include "list.h"
@@ -33,7 +32,7 @@ skl_gc_init(skl_ctx_t* ctx)
 	gc->ugc.userdata = ctx;
 
 	gc->refs = skl_list_alloc(ctx, 1);
-	BK_ASSERT(gc->refs, "Could not allocate gc_refs");
+	SKL_ASSERT(ctx, gc->refs, "Could not allocate gc_refs");
 	gc->pause = 0;
 	gc->rescan_list.next = NULL;
 	gc->free_ref_handles =
@@ -56,7 +55,7 @@ skl_gc_alloc(skl_ctx_t* ctx, size_t size, const skl_gc_info_t* gc_info)
 
 	memset(obj, 0, BK_MIN(sizeof(skl_gc_rescan_header_t), size));
 
-	BK_ASSERT(gc_info != NULL, "Invalid gc_info");
+	SKL_ASSERT(ctx, gc_info != NULL, "Invalid gc_info");
 	obj->gc_info = gc_info;
 
 	ugc_register(&ctx->gc.ugc, &obj->ugc_header);
