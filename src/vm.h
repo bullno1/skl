@@ -12,14 +12,20 @@
 	do { \
 		skl_vm_t* vm = ctx->vm; \
 		ADDR = skl_vm_stack_addr(vm, (INDEX)); \
-		SKL_ASSERT((CTX), vm->fp->bp <= (ADDR) && (ADDR) < vm->sp, "Invalid index") \
+		SKL_ASSERT((CTX), vm->fp->bp <= (ADDR) && (ADDR) < vm->sp, "Invalid stack index") \
 	} while(0);
 
 #define SKL_GET_OBJ(VALUE, CTX, INDEX, TYPE) \
 	do { \
 		skl_value_t* value; \
 		SKL_SAFE_STACK_ADDR(value, CTX, INDEX); \
-		SKL_ASSERT(ctx, skl_value_check_type(*value, TYPE), "Type error"); \
+		SKL_ASSERT( \
+			ctx, \
+			skl_value_check_type(*value, TYPE), \
+			"Type error: Value at #%d is not %s", \
+			(INDEX), \
+			skl_value_type_t_to_str(TYPE) \
+		); \
 		VALUE = skl_value_as_ref(*value); \
 	} while(0);
 

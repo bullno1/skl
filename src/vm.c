@@ -115,7 +115,7 @@ skl_resize_stack(skl_ctx_t* ctx, int count)
 {
 	skl_vm_t* vm = ctx->vm;
 	skl_value_t* target = skl_vm_stack_addr(vm, count);
-	SKL_ASSERT(ctx, vm->fp->bp <= target && target <= vm->sp_max, "Invalid index");
+	SKL_ASSERT(ctx, vm->fp->bp <= target && target <= vm->sp_max, "Invalid stack index");
 
 	if(target > vm->sp)
 	{
@@ -143,7 +143,13 @@ skl_as_number(skl_ctx_t* ctx, int index)
 {
 	skl_value_t* value;
 	SKL_SAFE_STACK_ADDR(value, ctx, index);
-	SKL_ASSERT(ctx, skl_value_check_type(*value, SKL_VAL_NUMBER), "Type error");
+	SKL_ASSERT(
+		ctx,
+		skl_value_check_type(*value, SKL_VAL_NUMBER),
+		"Type error: Value at #%d is not %s",
+		index,
+		skl_value_type_t_to_str(SKL_VAL_NUMBER)
+	);
 
 	return skl_value_as_number(*value);
 }
