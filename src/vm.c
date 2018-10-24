@@ -56,12 +56,17 @@ skl_vm_push_value(skl_ctx_t* ctx, skl_value_t value)
 }
 
 skl_value_t
-skl_vm_pop(skl_ctx_t* ctx)
+skl_vm_back(skl_ctx_t* ctx)
 {
 	skl_vm_t* vm = ctx->vm;
-	SKL_ASSERT(ctx, vm->sp > vm->fp->bp, "Stack underflow");
+	SKL_ASSERT(ctx, vm->fp->bp < vm->sp, "Stack underflow");
+	return vm->sp[-1];
+}
 
-	return *(--vm->sp);
+void
+skl_vm_unsafe_pop(skl_ctx_t* ctx)
+{
+	--ctx->vm->sp;
 }
 
 

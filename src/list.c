@@ -96,6 +96,71 @@ skl_list_len(skl_list_t* list)
 
 
 void
+skl_list_new(skl_ctx_t* ctx, int capacity)
+{
+	skl_vm_push_ref(ctx, SKL_VAL_LIST, skl_list_alloc(ctx, capacity));
+}
+
+void
+skl_list_get(skl_ctx_t* ctx, int index, int n)
+{
+	skl_list_t* list;
+	SKL_GET_OBJ(list, ctx, index, SKL_VAL_LIST);
+
+	skl_vm_push_value(ctx, skl_list_int_get(ctx, list, n));
+}
+
+void
+skl_list_set(skl_ctx_t* ctx, int index, int n)
+{
+	skl_list_t* list;
+	SKL_GET_OBJ(list, ctx, index, SKL_VAL_LIST);
+
+	skl_list_int_set(ctx, list, n, skl_vm_back(ctx));
+	skl_vm_unsafe_pop(ctx);
+}
+
+void
+skl_list_push(skl_ctx_t* ctx, int index)
+{
+	skl_list_t* list;
+	SKL_GET_OBJ(list, ctx, index, SKL_VAL_LIST);
+
+	skl_list_int_push(ctx, list, skl_vm_back(ctx));
+	skl_vm_unsafe_pop(ctx);
+}
+
+void
+skl_list_insert(skl_ctx_t* ctx, int index, int n)
+{
+	skl_list_t* list;
+	SKL_GET_OBJ(list, ctx, index, SKL_VAL_LIST);
+
+	skl_list_int_insert(ctx, list, n, skl_vm_back(ctx));
+	skl_vm_unsafe_pop(ctx);
+}
+
+void
+skl_list_delete(skl_ctx_t* ctx, int index, int n)
+{
+	skl_list_t* list;
+	SKL_GET_OBJ(list, ctx, index, SKL_VAL_LIST);
+
+	skl_list_int_delete(ctx, list, n);
+}
+
+
+void
+skl_list_quick_delete(skl_ctx_t* ctx, int index, int n)
+{
+	skl_list_t* list;
+	SKL_GET_OBJ(list, ctx, index, SKL_VAL_LIST);
+
+	skl_list_int_quick_delete(ctx, list, n);
+}
+
+
+void
 skl_list_mark(skl_ctx_t* ctx, skl_gc_header_t* header)
 {
 	skl_list_t* list = BK_CONTAINER_OF(header, skl_list_t, gc_header);

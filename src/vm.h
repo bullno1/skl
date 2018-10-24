@@ -116,7 +116,10 @@ skl_vm_push_value(skl_ctx_t* ctx, skl_value_t value);
 skl_value_t*
 skl_vm_stack_addr(const skl_vm_t* vm, int index);
 
+void
+skl_vm_unsafe_pop(skl_ctx_t* ctx);
+
 skl_value_t
-skl_vm_pop(skl_ctx_t* ctx);
+skl_vm_back(skl_ctx_t* ctx);
 
 #endif
