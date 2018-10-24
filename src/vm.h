@@ -15,6 +15,14 @@
 		SKL_ASSERT((CTX), vm->fp->bp <= (ADDR) && (ADDR) < vm->sp, "Invalid index") \
 	} while(0);
 
+#define SKL_GET_OBJ(VALUE, CTX, INDEX, TYPE) \
+	do { \
+		skl_value_t* value; \
+		SKL_SAFE_STACK_ADDR(value, CTX, INDEX); \
+		SKL_ASSERT(ctx, skl_value_type(*value) == TYPE, "Type error"); \
+		VALUE = skl_value_as_ref(*value); \
+	} while(0);
+
 
 typedef struct skl_vm_s skl_vm_t;
 typedef struct skl_code_chunk_s skl_code_chunk_t;

@@ -72,11 +72,8 @@ skl_push_string(skl_ctx_t* ctx, skl_string_ref_t str)
 skl_string_ref_t
 skl_to_string(skl_ctx_t* ctx, int index)
 {
-	skl_value_t* value;
-	SKL_SAFE_STACK_ADDR(value, ctx, index);
-	SKL_ASSERT(ctx, skl_value_type(*value) == SKL_VAL_STRING, "Type error");
-
-	const skl_string_t* string = skl_value_as_ref(*value);
+	const skl_string_t* string;
+	SKL_GET_OBJ(string, ctx, index, SKL_VAL_STRING);
 
 	return (skl_string_ref_t) {
 		.ptr = string->content,

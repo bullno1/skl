@@ -49,6 +49,7 @@ skl_vm_push_ref(skl_ctx_t* ctx, skl_value_type_t type, void* ref)
 	skl_vm_push_value(ctx, skl_value_make_ref(type, ref));
 }
 
+
 void
 skl_push_null(skl_ctx_t* ctx)
 {
