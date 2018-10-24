@@ -37,6 +37,11 @@ fmt(const MunitParameter params[], void* fixture)
 	skl_ctx_t* ctx = fixture;
 
 	skl_push_string_fmt(ctx, "Foo %s %d", "bar", 42);
+	khint_t size = kh_size(&ctx->strpool);
+	skl_push_string(ctx, SKL_STRING_REF("Foo bar 42"));
+	khint_t size2 = kh_size(&ctx->strpool);
+	munit_assert_int(size, ==, size2);
+
 	return MUNIT_OK;
 }
 
