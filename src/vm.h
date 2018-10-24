@@ -104,7 +104,13 @@ skl_vm_alloc(skl_ctx_t* ctx);
 void
 skl_vm_push_ref(skl_ctx_t* ctx, skl_value_type_t type, void* ref);
 
+void
+skl_vm_push_value(skl_ctx_t* ctx, skl_value_t value);
+
 skl_value_t*
 skl_vm_stack_addr(const skl_vm_t* vm, int index);
+
+skl_value_t
+skl_vm_pop(skl_ctx_t* ctx);
 
 #endif

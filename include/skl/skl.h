@@ -4,6 +4,7 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <stdbool.h>
+#include <stdarg.h>
 #include <bk/macro.h>
 
 
@@ -42,12 +43,6 @@ typedef uint16_t skl_source_addr_t;
 
 BK_ENUM(skl_value_type_t, SKL_VAL)
 
-#define SKL_EXEC(X) \
-	X(SKL_EXEC_OK) \
-	X(SKL_EXEC_ERROR) \
-
-BK_ENUM(skl_exec_status_t, SKL_EXEC)
-
 #define SKL_GC(X) \
 	X(SKL_GC_STEP) \
 	X(SKL_GC_COLLECT) \
@@ -55,6 +50,8 @@ BK_ENUM(skl_exec_status_t, SKL_EXEC)
 	X(SKL_GC_UNPAUSE) \
 
 BK_ENUM(skl_gc_op_t, SKL_GC)
+
+#define SKL_EXEC_ERROR (-1)
 
 typedef enum skl_proc_flag_e
 {
@@ -66,8 +63,8 @@ typedef enum skl_dump_flag_e
 	SKL_DUMP_EXTERNAL = 1,
 } skl_dump_flag_t;
 
-typedef skl_exec_status_t(*skl_native_proc_t)(skl_ctx_t*);
-typedef void(*skl_panic_fn_t)(skl_ctx_t* ctx, skl_string_ref_t msg);
+typedef int(*skl_native_proc_t)(skl_ctx_t*);
+typedef void(*skl_panic_fn_t)(skl_ctx_t* ctx, const char* fmt, va_list args);
 
 
 struct skl_config_s
@@ -126,6 +123,9 @@ SKL_API void
 skl_push_string(skl_ctx_t* ctx, skl_string_ref_t str);
 
 SKL_API void
+skl_push_string_fmtv(skl_ctx_t* ctx, const char* fmt, va_list args);
+
+SKL_API void
 skl_push_native_proc(skl_ctx_t* ctx, skl_native_proc_t proc);
 
 SKL_API void
@@ -139,7 +139,7 @@ skl_replace(skl_ctx_t* ctx, int index);
 SKL_API bool
 skl_check_type(skl_ctx_t* ctx, int index, skl_value_type_t type);
 
-SKL_API skl_exec_status_t
+SKL_API int
 skl_len(skl_ctx_t* ctx, int index);
 
 // Simple type
@@ -162,7 +162,7 @@ SKL_API void
 skl_list_set(skl_ctx_t* ctx, int index, int n);
 
 SKL_API void
-skl_list_resize(skl_ctx_t* ctx, int index, int size);
+skl_list_push(skl_ctx_t* ctx, int index);
 
 SKL_API void
 skl_list_insert(skl_ctx_t* ctx, int index, int n);
@@ -170,30 +170,8 @@ skl_list_insert(skl_ctx_t* ctx, int index, int n);
 SKL_API void
 skl_list_delete(skl_ctx_t* ctx, int index, int n);
 
-// Box
-
-SKL_API skl_exec_status_t
-skl_box_new(skl_ctx_t* ctx);
-
-SKL_API skl_exec_status_t
-skl_box_wrap(skl_ctx_t* ctx, int index);
-
-SKL_API skl_exec_status_t
-skl_box_unwrap(skl_ctx_t* ctx, int index);
-
-SKL_API skl_exec_status_t
-skl_box_put(skl_ctx_t* ctx, int index);
-
-// Procedure
-
-SKL_API skl_exec_status_t
-skl_call(skl_ctx_t* ctx, int num_args);
-
-SKL_API skl_exec_status_t
-skl_get_proc_flags(skl_ctx_t* ctx, int index, skl_proc_flag_t* flags);
-
-SKL_API skl_exec_status_t
-skl_set_proc_flags(skl_ctx_t* ctx, int index, skl_proc_flag_t flags);
+SKL_API void
+skl_list_quick_delete(skl_ctx_t* ctx, int index, int n);
 
 // Garbage collection
 
@@ -208,23 +186,5 @@ skl_deref(skl_ctx_t* ctx, skl_gc_handle_t handle);
 
 SKL_API void
 skl_unref(skl_ctx_t* ctx, skl_gc_handle_t handle);
-
-// Serialization
-
-SKL_API skl_exec_status_t
-skl_dump(
-	skl_ctx_t* ctx, int index, struct bk_file_s* file, skl_dump_flag_t flags
-);
-
-SKL_API skl_exec_status_t
-skl_load(skl_ctx_t* ctx, struct bk_file_s* file, skl_dump_flag_t flags);
-
-// Compile and interpret
-
-SKL_API skl_exec_status_t
-skl_compile(skl_ctx_t* ctx, struct bk_file_s* file, skl_string_ref_t name);
-
-SKL_API skl_exec_status_t
-skl_interpret(skl_ctx_t* ctx, struct bk_file_s* file, skl_string_ref_t name);
 
 #endif

@@ -1,4 +1,8 @@
+#include "strpool.h"
 #include <bk/allocator.h>
+#include <bk/array.h>
+#include <bk/printf.h>
+#include <bk/fs/mem.h>
 #include "context.h"
 #include "string.h"
 #include "vm.h"
@@ -80,6 +84,18 @@ skl_as_string(skl_ctx_t* ctx, int index)
 		.ptr = string->content,
 		.length = string->length,
 	};
+}
+
+void
+skl_push_string_fmtv(skl_ctx_t* ctx, const char* fmt, va_list args)
+{
+	bk_mem_file_t mem_file;
+	bk_file_t* fmt_file = bk_mem_fs_wrap_flexible(&mem_file, &ctx->fmt_buf);
+	SKL_ASSERT(ctx, bk_vprintf(fmt_file, fmt, args) == 0, "Invalid format string");
+	bk_array_push(ctx->fmt_buf, 0);
+
+	skl_string_t* string = skl_strpool_alloc(ctx, skl_string_ref(ctx->fmt_buf));
+	skl_vm_push_ref(ctx, SKL_VAL_STRING, string);
 }
 
 

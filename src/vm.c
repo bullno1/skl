@@ -9,9 +9,6 @@ skl_vm_mark(skl_ctx_t* ctx, skl_gc_header_t* header);
 static void
 skl_vm_release(skl_ctx_t* ctx, skl_gc_header_t* header);
 
-static void
-skl_vm_push_value(skl_ctx_t* ctx, skl_value_t value);
-
 
 const skl_gc_info_t skl_vm_gc_info = {
 	.mark_fn = skl_vm_mark,
@@ -47,6 +44,24 @@ skl_vm_push_ref(skl_ctx_t* ctx, skl_value_type_t type, void* ref)
 {
 	SKL_ASSERT(ctx, ref != NULL, "Out of memory");
 	skl_vm_push_value(ctx, skl_value_make_ref(type, ref));
+}
+
+void
+skl_vm_push_value(skl_ctx_t* ctx, skl_value_t value)
+{
+	skl_vm_t* vm = ctx->vm;
+	SKL_ASSERT(ctx, vm->sp < vm->sp_max, "Stack overflow");
+
+	*(vm->sp++) = value;
+}
+
+skl_value_t
+skl_vm_pop(skl_ctx_t* ctx)
+{
+	skl_vm_t* vm = ctx->vm;
+	SKL_ASSERT(ctx, vm->sp > vm->fp->bp, "Stack underflow");
+
+	return *(--vm->sp);
 }
 
 
@@ -159,13 +174,4 @@ skl_vm_release(skl_ctx_t* ctx, skl_gc_header_t* header)
 	bk_allocator_t* allocator = ctx->cfg.allocator;
 	bk_free(allocator, vm->sp_min);
 	bk_free(allocator, vm->fp_min);
-}
-
-void
-skl_vm_push_value(skl_ctx_t* ctx, skl_value_t value)
-{
-	skl_vm_t* vm = ctx->vm;
-	SKL_ASSERT(ctx, vm->sp < vm->sp_max, "Stack overflow");
-
-	*(vm->sp++) = value;
 }

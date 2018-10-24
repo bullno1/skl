@@ -88,6 +88,20 @@ skl_gc_mark_value(skl_ctx_t* ctx, skl_value_t value)
 }
 
 void
+skl_gc_write_barrier(skl_ctx_t* ctx, skl_gc_header_t* obj, skl_value_t value)
+{
+	if(skl_value_is_ref(value))
+	{
+		ugc_add_ref(
+			&ctx->gc.ugc,
+			&obj->ugc_header,
+			skl_value_as_ref(value)
+		);
+	}
+}
+
+
+void
 skl_gc(skl_ctx_t* ctx, skl_gc_op_t op)
 {
 	skl_gc_t* gc = &ctx->gc;
@@ -107,6 +121,45 @@ skl_gc(skl_ctx_t* ctx, skl_gc_op_t op)
 			gc->pause--;
 			break;
 	}
+}
+
+skl_gc_handle_t
+skl_gc_ref(skl_ctx_t* ctx, int index);
+/*{*/
+	/*skl_value_t* value;*/
+	/*SKL_SAFE_STACK_ADDR(value, ctx, index);*/
+
+	/*skl_gc_t* gc = &ctx->gc;*/
+	/*size_t num_free_handles = bk_array_len(gc->free_ref_handles);*/
+	/*if(num_free_handles > 0)*/
+	/*{*/
+		/*skl_gc_handle_t handle = bk_array_pop(gc->free_ref_handles);*/
+		/*skl_list_int_set(ctx, gc->refs, handle, *value);*/
+		/*return handle;*/
+	/*}*/
+	/*else*/
+	/*{*/
+		/*skl_gc_handle_t handle = skl_list_int_len(gc->refs);*/
+		/*skl_list_int_push(ctx, list, *value);*/
+		/*return handle;*/
+	/*}*/
+/*}*/
+
+
+void
+skl_gc_deref(skl_ctx_t* ctx, skl_gc_handle_t handle)
+{
+	skl_value_t value = skl_list_int_get(ctx, ctx->gc.refs, handle);
+	skl_vm_push_value(ctx, value);
+}
+
+
+void
+skl_gc_unref(skl_ctx_t* ctx, skl_gc_handle_t handle)
+{
+	skl_gc_t* gc = &ctx->gc;
+	skl_list_int_set(ctx, gc->refs, handle, skl_value_make_null());
+	bk_array_push(gc->free_ref_handles, handle);
 }
 
 

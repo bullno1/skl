@@ -24,7 +24,9 @@ SKL_SOURCES = $(shell find src -name '*.c')
 TEST_BK_SOURCES = \
 	deps/bk/src/array.c \
 	deps/bk/src/default_allocator.c \
-	deps/bk/src/fs/mem.c
+	deps/bk/src/fs/mem.c \
+	deps/bk/src/printf.c \
+	deps/bk/src/vendor/format/format.c
 
 
 all: test

@@ -29,11 +29,28 @@ alloc(const MunitParameter params[], void* fixture)
 	return MUNIT_OK;
 }
 
+static MunitResult
+fmt(const MunitParameter params[], void* fixture)
+{
+	(void)params;
+
+	skl_ctx_t* ctx = fixture;
+
+	skl_push_string_fmt(ctx, "Foo %s %d", "bar", 42);
+	return MUNIT_OK;
+}
+
 
 static MunitTest tests[] = {
 	{
 		.name = "/alloc",
 		.test = alloc,
+		.setup = setup_ctx,
+		.tear_down = teardown_ctx
+	},
+	{
+		.name = "/fmt",
+		.test = fmt,
 		.setup = setup_ctx,
 		.tear_down = teardown_ctx
 	},

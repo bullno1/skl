@@ -1,12 +1,13 @@
 #include "context.h"
 #include <stdio.h>
 #include <bk/allocator.h>
+#include <bk/array.h>
 #include "vm.h"
 #include "gc.h"
 
 
 static void
-skl_default_panic_handler(skl_ctx_t* ctx, skl_string_ref_t msg);
+skl_default_panic_handler(skl_ctx_t* ctx, const char* fmt, va_list args);
 
 
 skl_ctx_t*
@@ -17,7 +18,10 @@ skl_create_ctx(const skl_config_t* cfg)
 
 	*ctx = (skl_ctx_t) {
 		.cfg = *cfg,
+		.fmt_buf = bk_array_create(cfg->allocator, char, 80)
 	};
+
+	skl_set_error_panic(ctx, cfg->panic_handler);
 
 	skl_strpool_init(ctx);
 	skl_gc_init(ctx);
@@ -38,23 +42,64 @@ skl_destroy_ctx(skl_ctx_t* ctx)
 	skl_gc_cleanup(ctx);
 	skl_strpool_cleanup(ctx);
 
+	bk_array_destroy(ctx->fmt_buf);
 	bk_free(ctx->cfg.allocator, ctx);
 }
 
-void
-skl_panic(skl_ctx_t* ctx, skl_string_ref_t msg)
+skl_trap_t
+skl_set_trap(skl_ctx_t* ctx, skl_trap_t trap)
 {
-	skl_panic_fn_t panic_handler = ctx->cfg.panic_handler;
-	if(panic_handler == NULL) { panic_handler = skl_default_panic_handler; }
+	skl_trap_t old_trap = ctx->trap;
+	ctx->trap = trap;
+	return old_trap;
+}
 
-	skl_default_panic_handler(ctx, msg);
+skl_trap_t
+skl_set_error_panic(skl_ctx_t* ctx, skl_panic_fn_t panic_handler)
+{
+	skl_trap_t trap = {
+		.panic_handler = panic_handler ? panic_handler : skl_default_panic_handler
+	};
+	return skl_set_trap(ctx, trap);
+}
+
+int
+skl_set_error_longjmp(skl_ctx_t* ctx, skl_trap_t* old)
+{
+	skl_trap_t trap = { .panic_handler = NULL };
+	*old = skl_set_trap(ctx, trap);
+	return setjmp(ctx->trap.jmp_buf);
+}
+
+void
+skl_throw(skl_ctx_t* ctx, const char* fmt, ...)
+{
+	va_list args;
+	skl_trap_t* trap = &ctx->trap;
+
+	if(trap->panic_handler != NULL)
+	{
+		va_start(args, fmt);
+		trap->panic_handler(ctx, fmt, args);
+		va_end(args); // unreachable
+	}
+	else
+	{
+		skl_set_error_panic(ctx, ctx->cfg.panic_handler);
+		va_start(args, fmt);
+		skl_push_string_fmtv(ctx, fmt, args);
+		va_end(args);
+
+		longjmp(trap->jmp_buf, 1);
+	}
 }
 
 
 void
-skl_default_panic_handler(skl_ctx_t* ctx, skl_string_ref_t msg)
+skl_default_panic_handler(skl_ctx_t* ctx, const char* fmt, va_list args)
 {
-	(void)ctx;
-	printf("skl_context<0x%p>: %.*s\n", (void*)ctx, (int)msg.length, msg.ptr);
+	printf("skl_context_t<%p>: ", (void*)ctx);
+	vprintf(fmt, args);
+	printf("\n");
 	abort();
 }

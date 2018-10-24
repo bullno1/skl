@@ -14,6 +14,8 @@ struct skl_ctx_s
 	skl_gc_t gc;
 	skl_strpool_t strpool;
 	skl_lexer_t lexer;
+	skl_trap_t trap;
+	BK_ARRAY(char) fmt_buf;
 
 	skl_vm_t* main_vm;
 	skl_vm_t* vm;
