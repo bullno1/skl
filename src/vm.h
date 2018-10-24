@@ -19,7 +19,7 @@
 	do { \
 		skl_value_t* value; \
 		SKL_SAFE_STACK_ADDR(value, CTX, INDEX); \
-		SKL_ASSERT(ctx, skl_value_type(*value) == TYPE, "Type error"); \
+		SKL_ASSERT(ctx, skl_value_check_type(*value, TYPE), "Type error"); \
 		VALUE = skl_value_as_ref(*value); \
 	} while(0);
 

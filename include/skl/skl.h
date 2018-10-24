@@ -136,8 +136,8 @@ skl_replace(skl_ctx_t* ctx, int index);
 
 // Value inspection
 
-SKL_API skl_value_type_t
-skl_type(skl_ctx_t* ctx, int index);
+SKL_API bool
+skl_check_type(skl_ctx_t* ctx, int index, skl_value_type_t type);
 
 SKL_API skl_exec_status_t
 skl_len(skl_ctx_t* ctx, int index);

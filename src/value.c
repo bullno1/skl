@@ -20,10 +20,10 @@ skl_value_as_number(skl_value_t value)
 	return value.data.number;
 }
 
-skl_value_type_t
-skl_value_type(skl_value_t value)
+bool
+skl_value_check_type(skl_value_t value, skl_value_type_t type)
 {
-	return value.type;
+	return value.type == type;
 }
 
 skl_value_t
@@ -60,6 +60,11 @@ extern const skl_gc_info_t skl_string_gc_info;
 extern const skl_gc_info_t skl_list_gc_info;
 extern const skl_gc_info_t skl_vm_gc_info;
 
+
+static bool
+skl_value_check_ref_type(skl_value_t value, const skl_gc_info_t* gc_info);
+
+
 bool
 skl_value_is_ref(skl_value_t value)
 {
@@ -78,33 +83,21 @@ skl_value_as_number(skl_value_t value)
 	return nanbox_to_double(value);
 }
 
-skl_value_type_t
-skl_value_type(skl_value_t value)
+bool
+skl_value_check_type(skl_value_t value, skl_value_type_t type)
 {
-	if(nanbox_is_null(value))
+	switch(type)
 	{
-		return SKL_VAL_NULL;
-	}
-	else if(nanbox_is_double(value))
-	{
-		return SKL_VAL_NUMBER;
-	}
-	else
-	{
-		const skl_gc_header_t* ptr = nanbox_to_pointer(value);
-		const skl_gc_info_t* gc_info = ptr->gc_info;
-		if(gc_info == &skl_string_gc_info)
-		{
-			return SKL_VAL_STRING;
-		}
-		else if(gc_info == &skl_list_gc_info)
-		{
-			return SKL_VAL_LIST;
-		}
-		else
-		{
-			return SKL_VAL_NULL;
-		}
+		case SKL_VAL_NULL:
+			return nanbox_is_null(value);
+		case SKL_VAL_NUMBER:
+			return nanbox_is_double(value);
+		case SKL_VAL_LIST:
+			return skl_value_check_ref_type(value, &skl_list_gc_info);
+		case SKL_VAL_STRING:
+			return skl_value_check_ref_type(value, &skl_string_gc_info);
+		default:
+			return false;
 	}
 }
 
@@ -125,6 +118,16 @@ skl_value_make_ref(skl_value_type_t type, void* ref)
 {
 	(void)type;
 	return nanbox_from_pointer(ref);
+}
+
+
+bool
+skl_value_check_ref_type(skl_value_t value, const skl_gc_info_t* gc_info)
+{
+	if(!nanbox_is_pointer(value)) { return false; }
+
+	const skl_gc_header_t* header = nanbox_to_pointer(value);
+	return header->gc_info == gc_info;
 }
 
 #endif

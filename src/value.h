@@ -27,8 +27,8 @@ skl_value_as_ref(skl_value_t value);
 double
 skl_value_as_number(skl_value_t value);
 
-skl_value_type_t
-skl_value_type(skl_value_t value);
+bool
+skl_value_check_type(skl_value_t value, skl_value_type_t type);
 
 skl_value_t
 skl_value_make_null();

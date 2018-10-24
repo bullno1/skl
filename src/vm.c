@@ -114,13 +114,13 @@ skl_resize_stack(skl_ctx_t* ctx, int count)
 	vm->sp = target;
 }
 
-skl_value_type_t
-skl_type(skl_ctx_t* ctx, int index)
+bool
+skl_check_type(skl_ctx_t* ctx, int index, skl_value_type_t type)
 {
 	skl_value_t* value;
 	SKL_SAFE_STACK_ADDR(value, ctx, index);
 
-	return skl_value_type(*value);
+	return skl_value_check_type(*value, type);
 }
 
 double
@@ -128,7 +128,7 @@ skl_to_number(skl_ctx_t* ctx, int index)
 {
 	skl_value_t* value;
 	SKL_SAFE_STACK_ADDR(value, ctx, index);
-	SKL_ASSERT(ctx, skl_value_type(*value) == SKL_VAL_NUMBER, "Type error");
+	SKL_ASSERT(ctx, skl_value_check_type(*value, SKL_VAL_NUMBER), "Type error");
 
 	return skl_value_as_number(*value);
 }
