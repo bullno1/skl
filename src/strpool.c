@@ -86,7 +86,7 @@ skl_to_string(skl_ctx_t* ctx, int index)
 void
 skl_string_release(skl_ctx_t* ctx, skl_gc_header_t* header)
 {
-	skl_string_t* string = (skl_string_t*)header;
+	skl_string_t* string = BK_CONTAINER_OF(header, skl_string_t, gc_header);
 	skl_strpool_key_t key = {
 		.hash = string->hash,
 		.ref = {

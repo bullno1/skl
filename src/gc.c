@@ -9,6 +9,7 @@
 #include "list.h"
 #include "context.h"
 #include "value.h"
+#include "vm.h"
 
 
 static void
@@ -61,17 +62,20 @@ skl_gc_alloc(skl_ctx_t* ctx, size_t size, const skl_gc_info_t* gc_info)
 	ugc_register(&ctx->gc.ugc, &obj->ugc_header);
 
 	// An allocation means there could be new objects stored to the stack
-	if(ctx->vm != NULL) { skl_gc_schedule_rescan(ctx, ctx->vm); }
+	if(ctx->vm != NULL)
+	{
+		skl_gc_schedule_rescan(ctx, &ctx->vm->gc_header);
+	}
 
 	return obj;
 }
 
 void
-skl_gc_mark_obj(skl_ctx_t* ctx, void* obj)
+skl_gc_mark_obj(skl_ctx_t* ctx, skl_gc_header_t* header)
 {
-	if(obj == NULL) { return; }
+	if(header == NULL) { return; }
 
-	ugc_visit(&ctx->gc.ugc, obj);
+	ugc_visit(&ctx->gc.ugc, &header->ugc_header);
 }
 
 void
@@ -125,8 +129,8 @@ skl_gc_visit_root(ugc_t* ugc)
 	skl_ctx_t* ctx = ugc->userdata;
 	skl_gc_t* gc = &ctx->gc;
 
-	skl_gc_mark_obj(ctx, gc->refs);
-	skl_gc_mark_obj(ctx, ctx->main_vm);
+	skl_gc_mark_obj(ctx, &gc->refs->gc_header);
+	skl_gc_mark_obj(ctx, &ctx->main_vm->gc_header.gc_header);
 
 	for(skl_gc_rescan_header_t* itr = gc->rescan_list.next; itr != NULL;)
 	{
@@ -163,13 +167,12 @@ skl_gc_release(ugc_t* gc, ugc_header_t* header)
 }
 
 void
-skl_gc_schedule_rescan(skl_ctx_t* ctx, void* obj)
+skl_gc_schedule_rescan(skl_ctx_t* ctx, skl_gc_rescan_header_t* header)
 {
-	skl_gc_rescan_header_t* header = obj;
 	if(header->next == NULL)
 	{
 		skl_gc_rescan_header_t* rescan_list = &ctx->gc.rescan_list;
 		header->next = rescan_list->next;
-		rescan_list->next = obj;
+		rescan_list->next = header;
 	}
 }

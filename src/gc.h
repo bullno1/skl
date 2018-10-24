@@ -51,7 +51,7 @@ void*
 skl_gc_alloc(skl_ctx_t* ctx, size_t size, const skl_gc_info_t* gc_info);
 
 void
-skl_gc_mark_obj(skl_ctx_t* ctx, void* obj);
+skl_gc_mark_obj(skl_ctx_t* ctx, skl_gc_header_t* obj);
 
 void
 skl_gc_mark_value(skl_ctx_t* ctx, skl_value_t value);
@@ -60,6 +60,6 @@ void
 skl_gc_write_barrier(skl_ctx_t* ctx, skl_gc_header_t* obj, skl_value_t value);
 
 void
-skl_gc_schedule_rescan(skl_ctx_t* ctx, void* obj);
+skl_gc_schedule_rescan(skl_ctx_t* ctx, skl_gc_rescan_header_t* obj);
 
 #endif

@@ -34,7 +34,7 @@ skl_list_alloc(skl_ctx_t* ctx, int capacity)
 void
 skl_list_mark(skl_ctx_t* ctx, skl_gc_header_t* header)
 {
-	skl_list_t* list = (skl_list_t*)header;
+	skl_list_t* list = BK_CONTAINER_OF(header, skl_list_t, gc_header);
 	bk_array_foreach(skl_value_t, value, list->elements)
 	{
 		skl_gc_mark_value(ctx, *value);
@@ -45,7 +45,7 @@ void
 skl_list_release(skl_ctx_t* ctx, skl_gc_header_t* header)
 {
 	(void)ctx;
-	skl_list_t* list = (skl_list_t*)header;
+	skl_list_t* list = BK_CONTAINER_OF(header, skl_list_t, gc_header);
 	bk_array_destroy(list->elements);
 }
 

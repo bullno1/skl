@@ -137,7 +137,7 @@ skl_to_number(skl_ctx_t* ctx, int index)
 void
 skl_vm_mark(skl_ctx_t* ctx, skl_gc_header_t* header)
 {
-	skl_vm_t* vm = (skl_vm_t*)header;
+	skl_vm_t* vm = BK_CONTAINER_OF(header, skl_vm_t, gc_header);
 
 	for(skl_value_t* itr = vm->sp_min; itr < vm->sp; ++itr)
 	{
@@ -155,8 +155,8 @@ skl_vm_stack_addr(const skl_vm_t* vm, int index)
 void
 skl_vm_release(skl_ctx_t* ctx, skl_gc_header_t* header)
 {
+	skl_vm_t* vm = BK_CONTAINER_OF(header, skl_vm_t, gc_header);
 	bk_allocator_t* allocator = ctx->cfg.allocator;
-	skl_vm_t* vm = (skl_vm_t*)header;
 	bk_free(allocator, vm->sp_min);
 	bk_free(allocator, vm->fp_min);
 }
