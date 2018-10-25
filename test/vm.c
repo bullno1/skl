@@ -61,7 +61,7 @@ trap(const MunitParameter params[], void* fixture)
 	{
 		skl_throw(ctx, "wat");
 	}
-	SKL_CATCH
+	SKL_CATCH(ctx, trap)
 	{
 		caught = 1;
 	}
@@ -74,7 +74,7 @@ trap(const MunitParameter params[], void* fixture)
 	{
 		// No throw
 	}
-	SKL_CATCH
+	SKL_CATCH(ctx, trap)
 	{
 		caught = 1;
 	}
@@ -91,7 +91,7 @@ trap(const MunitParameter params[], void* fixture)
 		{
 			skl_throw(ctx, "once");
 		}
-		SKL_CATCH
+		SKL_CATCH(ctx, trap)
 		{
 			caught = 1;
 		}
@@ -101,7 +101,29 @@ trap(const MunitParameter params[], void* fixture)
 			skl_throw(ctx, "twice");
 		}
 	}
-	SKL_CATCH
+	SKL_CATCH(ctx, trap)
+	{
+		caught = 2;
+	}
+	SKL_END_TRY(ctx, trap)
+	munit_assert_int(2, ==, caught);
+
+	// Throw in handler
+	caught = 0;
+	SKL_BEGIN_TRY(ctx, trap)
+	{
+		skl_trap_t trap;
+		SKL_BEGIN_TRY(ctx, trap)
+		{
+			skl_throw(ctx, "once");
+		}
+		SKL_CATCH(ctx, trap)
+		{
+			skl_throw(ctx, "nested");
+		}
+		SKL_END_TRY(ctx, trap)
+	}
+	SKL_CATCH(ctx, trap)
 	{
 		caught = 2;
 	}

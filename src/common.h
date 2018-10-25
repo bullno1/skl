@@ -13,7 +13,7 @@
 	do { if(!(COND)) { skl_throw(CTX, __VA_ARGS__); } } while(0);
 #define SKL_BEGIN_TRY(CTX, TRAP) \
 	if(setjmp(*skl_prepare_longjmp((CTX), &(TRAP))) == 0)
-#define SKL_CATCH else
+#define SKL_CATCH(CTX, TRAP) else if(skl_restore_trap((CTX), (TRAP)))
 #define SKL_END_TRY(CTX, TRAP) skl_set_trap((CTX), (TRAP));
 
 
@@ -49,5 +49,12 @@ skl_prepare_longjmp(skl_ctx_t* ctx, skl_trap_t* old);
 
 void
 skl_throw(skl_ctx_t* ctx, const char* fmt, ...);
+
+BK_INLINE bool
+skl_restore_trap(skl_ctx_t* ctx, skl_trap_t trap)
+{
+	skl_set_trap(ctx, trap);
+	return true;
+}
 
 #endif
