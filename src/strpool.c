@@ -75,7 +75,7 @@ skl_push_string(skl_ctx_t* ctx, skl_string_ref_t str)
 }
 
 skl_string_ref_t
-skl_as_string(skl_ctx_t* ctx, int index)
+skl_as_string(skl_ctx_t* ctx, skl_index_t index)
 {
 	const skl_string_t* string;
 	SKL_GET_OBJ(string, ctx, index, SKL_VAL_STRING);

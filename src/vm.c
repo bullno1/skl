@@ -83,7 +83,7 @@ skl_push_number(skl_ctx_t* ctx, double number)
 }
 
 void
-skl_dup(skl_ctx_t* ctx, int index)
+skl_dup(skl_ctx_t* ctx, skl_index_t index)
 {
 	skl_value_t* value;
 	SKL_SAFE_STACK_ADDR(value, ctx, index);
@@ -92,7 +92,7 @@ skl_dup(skl_ctx_t* ctx, int index)
 }
 
 void
-skl_replace(skl_ctx_t* ctx, int index)
+skl_replace(skl_ctx_t* ctx, skl_index_t index)
 {
 	skl_value_t* value;
 	SKL_SAFE_STACK_ADDR(value, ctx, index);
@@ -101,14 +101,14 @@ skl_replace(skl_ctx_t* ctx, int index)
 }
 
 bool
-skl_check_stack(skl_ctx_t* ctx, int count)
+skl_check_stack(skl_ctx_t* ctx, skl_index_t count)
 {
 	skl_vm_t* vm = ctx->vm;
 	skl_value_t* next_sp = vm->sp + count;
 	return vm->fp->bp <= next_sp && next_sp <= vm->sp_max;
 }
 
-int
+skl_index_t
 skl_stack_len(skl_ctx_t* ctx)
 {
 	skl_vm_t* vm = ctx->vm;
@@ -116,7 +116,7 @@ skl_stack_len(skl_ctx_t* ctx)
 }
 
 void
-skl_resize_stack(skl_ctx_t* ctx, int count)
+skl_resize_stack(skl_ctx_t* ctx, skl_index_t count)
 {
 	skl_vm_t* vm = ctx->vm;
 	skl_value_t* target = skl_vm_stack_addr(vm, count);
@@ -135,7 +135,7 @@ skl_resize_stack(skl_ctx_t* ctx, int count)
 }
 
 bool
-skl_check_type(skl_ctx_t* ctx, int index, skl_value_type_t type)
+skl_check_type(skl_ctx_t* ctx, skl_index_t index, skl_value_type_t type)
 {
 	skl_value_t* value;
 	SKL_SAFE_STACK_ADDR(value, ctx, index);
@@ -144,7 +144,7 @@ skl_check_type(skl_ctx_t* ctx, int index, skl_value_type_t type)
 }
 
 double
-skl_as_number(skl_ctx_t* ctx, int index)
+skl_as_number(skl_ctx_t* ctx, skl_index_t index)
 {
 	skl_value_t* value;
 	SKL_SAFE_STACK_ADDR(value, ctx, index);
@@ -172,7 +172,7 @@ skl_vm_mark(skl_ctx_t* ctx, skl_gc_header_t* header)
 }
 
 skl_value_t*
-skl_vm_stack_addr(const skl_vm_t* vm, int index)
+skl_vm_stack_addr(const skl_vm_t* vm, skl_index_t index)
 {
 	skl_value_t* base_addr = index >= 0 ? vm->fp->bp : vm->sp;
 	return base_addr + index;

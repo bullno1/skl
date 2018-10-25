@@ -28,8 +28,8 @@ typedef struct skl_config_s skl_config_t;
 typedef struct skl_string_ref_s skl_string_ref_t;
 typedef struct skl_location_s skl_location_t;
 typedef struct skl_loc_range_s skl_loc_range_t;
-typedef unsigned int skl_gc_handle_t;
 typedef uint16_t skl_source_addr_t;
+typedef int32_t skl_index_t;
 
 
 #define SKL_VAL(X) \
@@ -105,13 +105,13 @@ skl_destroy_ctx(skl_ctx_t* ctx);
 // Stack manipulation
 
 SKL_API bool
-skl_check_stack(skl_ctx_t* ctx, int count);
+skl_check_stack(skl_ctx_t* ctx, skl_index_t count);
 
-SKL_API int
+SKL_API skl_index_t
 skl_stack_len(skl_ctx_t* ctx);
 
 SKL_API void
-skl_resize_stack(skl_ctx_t* ctx, int size);
+skl_resize_stack(skl_ctx_t* ctx, skl_index_t size);
 
 SKL_API void
 skl_push_null(skl_ctx_t* ctx);
@@ -129,62 +129,76 @@ SKL_API void
 skl_push_native_proc(skl_ctx_t* ctx, skl_native_proc_t proc);
 
 SKL_API void
-skl_dup(skl_ctx_t* ctx, int index);
+skl_dup(skl_ctx_t* ctx, skl_index_t index);
 
 SKL_API void
-skl_replace(skl_ctx_t* ctx, int index);
+skl_replace(skl_ctx_t* ctx, skl_index_t index);
 
 // Value inspection
 
 SKL_API bool
-skl_check_type(skl_ctx_t* ctx, int index, skl_value_type_t type);
+skl_check_type(skl_ctx_t* ctx, skl_index_t index, skl_value_type_t type);
 
-SKL_API int
-skl_len(skl_ctx_t* ctx, int index);
+SKL_API skl_index_t
+skl_len(skl_ctx_t* ctx, skl_index_t index);
 
 // Simple type
 
 SKL_API skl_string_ref_t
-skl_as_string(skl_ctx_t* ctx, int index);
+skl_as_string(skl_ctx_t* ctx, skl_index_t index);
 
 SKL_API double
-skl_as_number(skl_ctx_t* ctx, int index);
+skl_as_number(skl_ctx_t* ctx, skl_index_t index);
 
 // List
 
 SKL_API void
-skl_list_new(skl_ctx_t* ctx, int capacity);
+skl_list_new(skl_ctx_t* ctx, skl_index_t capacity);
 
 SKL_API void
-skl_list_get(skl_ctx_t* ctx, int index, int n);
+skl_list_get(skl_ctx_t* ctx, skl_index_t index, skl_index_t n);
 
 SKL_API void
-skl_list_set(skl_ctx_t* ctx, int index, int n);
+skl_list_set(skl_ctx_t* ctx, skl_index_t index, skl_index_t n);
 
 SKL_API void
-skl_list_push(skl_ctx_t* ctx, int index);
+skl_list_push(skl_ctx_t* ctx, skl_index_t index);
 
 SKL_API void
-skl_list_insert(skl_ctx_t* ctx, int index, int n);
+skl_list_insert(skl_ctx_t* ctx, skl_index_t index, skl_index_t n);
 
 SKL_API void
-skl_list_delete(skl_ctx_t* ctx, int index, int n);
+skl_list_delete(skl_ctx_t* ctx, skl_index_t index, skl_index_t n);
 
 SKL_API void
-skl_list_quick_delete(skl_ctx_t* ctx, int index, int n);
+skl_list_quick_delete(skl_ctx_t* ctx, skl_index_t index, skl_index_t n);
+
+// Map
+
+SKL_API void
+skl_map_new(skl_ctx_t* ctx);
+
+SKL_API void
+skl_map_set(skl_ctx_t* ctx, skl_index_t index);
+
+SKL_API void
+skl_map_get(skl_ctx_t* ctx, skl_index_t index);
+
+SKL_API void
+skl_map_get_default(skl_ctx_t* ctx, skl_index_t index);
 
 // Garbage collection
 
 SKL_API void
 skl_gc(skl_ctx_t* ctx, skl_gc_op_t op);
 
-SKL_API skl_gc_handle_t
-skl_ref(skl_ctx_t* ctx, int index);
+SKL_API skl_index_t
+skl_ref(skl_ctx_t* ctx, skl_index_t index);
 
 SKL_API void
-skl_deref(skl_ctx_t* ctx, skl_gc_handle_t handle);
+skl_deref(skl_ctx_t* ctx, skl_index_t handle);
 
 SKL_API void
-skl_unref(skl_ctx_t* ctx, skl_gc_handle_t handle);
+skl_unref(skl_ctx_t* ctx, skl_index_t handle);
 
 #endif

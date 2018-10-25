@@ -37,7 +37,7 @@ struct skl_gc_s
 	unsigned int pause;
 	skl_list_t* refs;
 	skl_gc_rescan_header_t rescan_list;
-	BK_ARRAY(skl_gc_handle_t) free_ref_handles;
+	BK_ARRAY(skl_index_t) free_ref_handles;
 };
 
 

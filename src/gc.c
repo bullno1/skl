@@ -35,8 +35,7 @@ skl_gc_init(skl_ctx_t* ctx)
 	SKL_ASSERT(ctx, gc->refs, "Could not allocate gc_refs");
 	gc->pause = 0;
 	gc->rescan_list.next = NULL;
-	gc->free_ref_handles =
-		bk_array_create(ctx->cfg.allocator, skl_gc_handle_t, 1);
+	gc->free_ref_handles = bk_array_create(ctx->cfg.allocator, skl_index_t, 1);
 }
 
 void
@@ -122,15 +121,15 @@ skl_gc(skl_ctx_t* ctx, skl_gc_op_t op)
 	}
 }
 
-skl_gc_handle_t
-skl_gc_ref(skl_ctx_t* ctx, int index)
+skl_index_t
+skl_gc_ref(skl_ctx_t* ctx, skl_index_t index)
 {
 	skl_value_t* value;
 	SKL_SAFE_STACK_ADDR(value, ctx, index);
 
 	skl_gc_t* gc = &ctx->gc;
 	size_t num_free_handles = bk_array_len(gc->free_ref_handles);
-	skl_gc_handle_t handle;
+	skl_index_t handle;
 
 	if(num_free_handles > 0)
 	{
@@ -147,14 +146,14 @@ skl_gc_ref(skl_ctx_t* ctx, int index)
 }
 
 void
-skl_gc_deref(skl_ctx_t* ctx, skl_gc_handle_t handle)
+skl_gc_deref(skl_ctx_t* ctx, skl_index_t handle)
 {
 	skl_value_t value = skl_list_int_get(ctx, ctx->gc.refs, handle);
 	skl_vm_push_value(ctx, value);
 }
 
 void
-skl_gc_unref(skl_ctx_t* ctx, skl_gc_handle_t handle)
+skl_gc_unref(skl_ctx_t* ctx, skl_index_t handle)
 {
 	skl_gc_t* gc = &ctx->gc;
 	skl_list_int_set(ctx, gc->refs, handle, skl_value_make_null());

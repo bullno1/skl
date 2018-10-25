@@ -11,10 +11,10 @@ skl_list_mark(skl_ctx_t* ctx, skl_gc_header_t* header);
 static void
 skl_list_release(skl_ctx_t* ctx, skl_gc_header_t* header);
 
-static int
-skl_list_normalize_index(skl_ctx_t* ctx, skl_list_t* list, int index)
+static skl_index_t
+skl_list_normalize_index(skl_ctx_t* ctx, skl_list_t* list, skl_index_t index)
 {
-	int len = skl_list_len(list);
+	skl_index_t len = skl_list_len(list);
 	if(index < 0) { index += len; }
 	SKL_ASSERT(ctx, 0 <= index && index < len, "Invalid list index");
 
@@ -42,7 +42,7 @@ skl_list_alloc(skl_ctx_t* ctx, int capacity)
 }
 
 skl_value_t
-skl_list_int_get(skl_ctx_t* ctx, skl_list_t* list, int index)
+skl_list_int_get(skl_ctx_t* ctx, skl_list_t* list, skl_index_t index)
 {
 	(void)ctx;
 	index = skl_list_normalize_index(ctx, list, index);
@@ -50,7 +50,7 @@ skl_list_int_get(skl_ctx_t* ctx, skl_list_t* list, int index)
 }
 
 void
-skl_list_int_set(skl_ctx_t* ctx, skl_list_t* list, int index, skl_value_t value)
+skl_list_int_set(skl_ctx_t* ctx, skl_list_t* list, skl_index_t index, skl_value_t value)
 {
 	index = skl_list_normalize_index(ctx, list, index);
 	list->elements[index] = value;
@@ -65,7 +65,7 @@ skl_list_int_push(skl_ctx_t* ctx, skl_list_t* list, skl_value_t value)
 }
 
 void
-skl_list_int_insert(skl_ctx_t* ctx, skl_list_t* list, int index, skl_value_t value)
+skl_list_int_insert(skl_ctx_t* ctx, skl_list_t* list, skl_index_t index, skl_value_t value)
 {
 	index = skl_list_normalize_index(ctx, list, index);
 	bk_array_insert(list->elements, index, value);
@@ -73,7 +73,7 @@ skl_list_int_insert(skl_ctx_t* ctx, skl_list_t* list, int index, skl_value_t val
 }
 
 void
-skl_list_int_delete(skl_ctx_t* ctx, skl_list_t* list, int index)
+skl_list_int_delete(skl_ctx_t* ctx, skl_list_t* list, skl_index_t index)
 {
 	(void)ctx;
 	index = skl_list_normalize_index(ctx, list, index);
@@ -81,14 +81,14 @@ skl_list_int_delete(skl_ctx_t* ctx, skl_list_t* list, int index)
 }
 
 void
-skl_list_int_quick_delete(skl_ctx_t* ctx, skl_list_t* list, int index)
+skl_list_int_quick_delete(skl_ctx_t* ctx, skl_list_t* list, skl_index_t index)
 {
 	(void)ctx;
 	index = skl_list_normalize_index(ctx, list, index);
 	bk_array_quick_remove(list, index);
 }
 
-int
+skl_index_t
 skl_list_len(skl_list_t* list)
 {
 	return bk_array_len(list->elements);
@@ -96,13 +96,13 @@ skl_list_len(skl_list_t* list)
 
 
 void
-skl_list_new(skl_ctx_t* ctx, int capacity)
+skl_list_new(skl_ctx_t* ctx, skl_index_t capacity)
 {
 	skl_vm_push_ref(ctx, SKL_VAL_LIST, skl_list_alloc(ctx, capacity));
 }
 
 void
-skl_list_get(skl_ctx_t* ctx, int index, int n)
+skl_list_get(skl_ctx_t* ctx, skl_index_t index, skl_index_t n)
 {
 	skl_list_t* list;
 	SKL_GET_OBJ(list, ctx, index, SKL_VAL_LIST);
@@ -111,7 +111,7 @@ skl_list_get(skl_ctx_t* ctx, int index, int n)
 }
 
 void
-skl_list_set(skl_ctx_t* ctx, int index, int n)
+skl_list_set(skl_ctx_t* ctx, skl_index_t index, skl_index_t n)
 {
 	skl_list_t* list;
 	SKL_GET_OBJ(list, ctx, index, SKL_VAL_LIST);
@@ -121,7 +121,7 @@ skl_list_set(skl_ctx_t* ctx, int index, int n)
 }
 
 void
-skl_list_push(skl_ctx_t* ctx, int index)
+skl_list_push(skl_ctx_t* ctx, skl_index_t index)
 {
 	skl_list_t* list;
 	SKL_GET_OBJ(list, ctx, index, SKL_VAL_LIST);
@@ -131,7 +131,7 @@ skl_list_push(skl_ctx_t* ctx, int index)
 }
 
 void
-skl_list_insert(skl_ctx_t* ctx, int index, int n)
+skl_list_insert(skl_ctx_t* ctx, skl_index_t index, skl_index_t n)
 {
 	skl_list_t* list;
 	SKL_GET_OBJ(list, ctx, index, SKL_VAL_LIST);
@@ -141,7 +141,7 @@ skl_list_insert(skl_ctx_t* ctx, int index, int n)
 }
 
 void
-skl_list_delete(skl_ctx_t* ctx, int index, int n)
+skl_list_delete(skl_ctx_t* ctx, skl_index_t index, skl_index_t n)
 {
 	skl_list_t* list;
 	SKL_GET_OBJ(list, ctx, index, SKL_VAL_LIST);
@@ -151,7 +151,7 @@ skl_list_delete(skl_ctx_t* ctx, int index, int n)
 
 
 void
-skl_list_quick_delete(skl_ctx_t* ctx, int index, int n)
+skl_list_quick_delete(skl_ctx_t* ctx, skl_index_t index, skl_index_t n)
 {
 	skl_list_t* list;
 	SKL_GET_OBJ(list, ctx, index, SKL_VAL_LIST);
