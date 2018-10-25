@@ -11,9 +11,8 @@
 
 #define SKL_ASSERT(CTX, COND, ...) \
 	do { if(!(COND)) { skl_throw(CTX, __VA_ARGS__); } } while(0);
-#define SKL_BEGIN_TRY(CTX) if(skl_begin_try(CTX))
-#define SKL_CATCH else
-#define SKL_END_TRY(CTX) skl_end_try(CTX)
+#define SKL_SET_ERROR_LONGJMP(CTX, TRAP) \
+	setjmp(*skl_prepare_longjmp((CTX), (TRAP)))
 
 
 typedef struct skl_string_s skl_string_t;
@@ -43,8 +42,8 @@ skl_set_trap(skl_ctx_t* ctx, skl_trap_t trap);
 skl_trap_t
 skl_set_error_panic(skl_ctx_t* ctx, skl_panic_fn_t panic_handler);
 
-int
-skl_set_error_longjmp(skl_ctx_t* ctx, skl_trap_t* old);
+jmp_buf*
+skl_prepare_longjmp(skl_ctx_t* ctx, skl_trap_t* old);
 
 void
 skl_throw(skl_ctx_t* ctx, const char* fmt, ...);

@@ -63,12 +63,12 @@ skl_set_error_panic(skl_ctx_t* ctx, skl_panic_fn_t panic_handler)
 	return skl_set_trap(ctx, trap);
 }
 
-int
-skl_set_error_longjmp(skl_ctx_t* ctx, skl_trap_t* old)
+jmp_buf*
+skl_prepare_longjmp(skl_ctx_t* ctx, skl_trap_t* old)
 {
-	skl_trap_t trap = { .panic_handler = NULL };
-	*old = skl_set_trap(ctx, trap);
-	return setjmp(ctx->trap.jmp_buf);
+	*old = ctx->trap;
+	ctx->trap.panic_handler = NULL;
+	return &ctx->trap.jmp_buf;
 }
 
 void
@@ -85,12 +85,15 @@ skl_throw(skl_ctx_t* ctx, const char* fmt, ...)
 	}
 	else
 	{
+		jmp_buf jmpbuf;
+		memcpy(&jmpbuf, &trap->jmp_buf, sizeof(jmp_buf));
+
 		skl_set_error_panic(ctx, ctx->cfg.panic_handler);
 		va_start(args, fmt);
 		skl_push_string_fmtv(ctx, fmt, args);
 		va_end(args);
 
-		longjmp(trap->jmp_buf, 1);
+		longjmp(jmpbuf, 1);
 	}
 }
 

@@ -47,11 +47,62 @@ stack(const MunitParameter params[], void* fixture)
 	return MUNIT_OK;
 }
 
+static MunitResult
+trap(const MunitParameter params[], void* fixture)
+{
+	(void)params;
+
+	skl_ctx_t* ctx = fixture;
+
+	int caught = 0;
+	skl_trap_t trap;
+	if(SKL_SET_ERROR_LONGJMP(ctx, &trap) == 0) {
+		skl_throw(ctx, "wat");
+	} else {
+		caught = 1;
+	}
+	skl_set_trap(ctx, trap);
+	munit_assert_int(1, ==, caught);
+
+	caught = 0;
+	if(SKL_SET_ERROR_LONGJMP(ctx, &trap) == 0) {
+		// No throw
+	} else {
+		caught = 1;
+	}
+	skl_set_trap(ctx, trap);
+	munit_assert_int(0, ==, caught);
+
+	caught = 0;
+	if(SKL_SET_ERROR_LONGJMP(ctx, &trap) == 0) {
+		skl_trap_t trap;
+		if(SKL_SET_ERROR_LONGJMP(ctx, &trap) == 0) {
+			skl_throw(ctx, "once");
+		} else {
+			caught = 1;
+		}
+		skl_set_trap(ctx, trap);
+		skl_throw(ctx, "twice");
+	} else {
+		caught = 2;
+	}
+	skl_set_trap(ctx, trap);
+	munit_assert_int(2, ==, caught);
+
+	return MUNIT_OK;
+}
+
 
 static MunitTest tests[] = {
 	{
 		.name = "/stack",
 		.test = stack,
+		.setup = setup_ctx,
+		.tear_down = teardown_ctx
+	},
+	{
+		.name = "/trap",
+		.test = trap,
 		.setup = setup_ctx,
 		.tear_down = teardown_ctx
 	},
