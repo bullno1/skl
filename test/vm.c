@@ -51,7 +51,6 @@ static MunitResult
 trap(const MunitParameter params[], void* fixture)
 {
 	(void)params;
-
 	skl_ctx_t* ctx = fixture;
 
 	int caught = 0;
@@ -133,6 +132,36 @@ trap(const MunitParameter params[], void* fixture)
 	return MUNIT_OK;
 }
 
+static MunitResult
+type_error(const MunitParameter params[], void* fixture)
+{
+	(void)params;
+	skl_ctx_t* ctx = fixture;
+	bool caught;
+	skl_trap_t trap;
+
+	SKL_BEGIN_TRY(ctx, trap)
+	{
+		skl_push_null(ctx);
+		skl_as_number(ctx, 0);
+	}
+	SKL_CATCH(ctx, trap)
+	{
+		caught = true;
+	}
+	SKL_END_TRY(ctx, trap)
+
+	munit_assert(caught);
+	munit_assert_int(2, ==, skl_stack_len(ctx));
+	munit_assert(skl_check_type(ctx, -1, SKL_VAL_STRING));
+	skl_assert_string_ref_equal(
+		SKL_STRING_REF("Type error: Value at #0 is not SKL_VAL_NUMBER"),
+		skl_as_string(ctx, -1)
+	);
+
+	return MUNIT_OK;
+}
+
 
 static MunitTest tests[] = {
 	{
@@ -144,6 +173,12 @@ static MunitTest tests[] = {
 	{
 		.name = "/trap",
 		.test = trap,
+		.setup = setup_ctx,
+		.tear_down = teardown_ctx
+	},
+	{
+		.name = "/type_error",
+		.test = type_error,
 		.setup = setup_ctx,
 		.tear_down = teardown_ctx
 	},
