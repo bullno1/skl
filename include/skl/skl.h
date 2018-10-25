@@ -193,12 +193,12 @@ SKL_API void
 skl_gc(skl_ctx_t* ctx, skl_gc_op_t op);
 
 SKL_API skl_index_t
-skl_ref(skl_ctx_t* ctx, skl_index_t index);
+skl_gc_ref(skl_ctx_t* ctx, skl_index_t index);
 
 SKL_API void
-skl_deref(skl_ctx_t* ctx, skl_index_t handle);
+skl_gc_deref(skl_ctx_t* ctx, skl_index_t handle);
 
 SKL_API void
-skl_unref(skl_ctx_t* ctx, skl_index_t handle);
+skl_gc_unref(skl_ctx_t* ctx, skl_index_t handle);
 
 #endif
