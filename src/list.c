@@ -12,14 +12,7 @@ static void
 skl_list_release(skl_ctx_t* ctx, skl_gc_header_t* header);
 
 static skl_index_t
-skl_list_normalize_index(skl_ctx_t* ctx, skl_list_t* list, skl_index_t index)
-{
-	skl_index_t len = skl_list_len(list);
-	if(index < 0) { index += len; }
-	SKL_ASSERT(ctx, 0 <= index && index < len, "Invalid list index");
-
-	return index;
-}
+skl_list_normalize_index(skl_ctx_t* ctx, skl_list_t* list, skl_index_t index);
 
 
 const skl_gc_info_t skl_list_gc_info = {
@@ -176,4 +169,14 @@ skl_list_release(skl_ctx_t* ctx, skl_gc_header_t* header)
 	(void)ctx;
 	skl_list_t* list = BK_CONTAINER_OF(header, skl_list_t, gc_header);
 	bk_array_destroy(list->elements);
+}
+
+static skl_index_t
+skl_list_normalize_index(skl_ctx_t* ctx, skl_list_t* list, skl_index_t index)
+{
+	skl_index_t len = skl_list_len(list);
+	if(index < 0) { index += len; }
+	SKL_ASSERT(ctx, 0 <= index && index < len, "Invalid list index");
+
+	return index;
 }
