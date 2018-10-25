@@ -55,38 +55,57 @@ trap(const MunitParameter params[], void* fixture)
 	skl_ctx_t* ctx = fixture;
 
 	int caught = 0;
+
 	skl_trap_t trap;
-	if(SKL_SET_ERROR_LONGJMP(ctx, &trap) == 0) {
+	SKL_BEGIN_TRY(ctx, trap)
+	{
 		skl_throw(ctx, "wat");
-	} else {
+	}
+	SKL_CATCH
+	{
 		caught = 1;
 	}
-	skl_set_trap(ctx, trap);
+	SKL_END_TRY(ctx, trap)
+
 	munit_assert_int(1, ==, caught);
 
 	caught = 0;
-	if(SKL_SET_ERROR_LONGJMP(ctx, &trap) == 0) {
+	SKL_BEGIN_TRY(ctx, trap)
+	{
 		// No throw
-	} else {
+	}
+	SKL_CATCH
+	{
 		caught = 1;
 	}
-	skl_set_trap(ctx, trap);
+	SKL_END_TRY(ctx, trap)
+
 	munit_assert_int(0, ==, caught);
 
+	// nested
 	caught = 0;
-	if(SKL_SET_ERROR_LONGJMP(ctx, &trap) == 0) {
+	SKL_BEGIN_TRY(ctx, trap)
+	{
 		skl_trap_t trap;
-		if(SKL_SET_ERROR_LONGJMP(ctx, &trap) == 0) {
+		SKL_BEGIN_TRY(ctx, trap)
+		{
 			skl_throw(ctx, "once");
-		} else {
+		}
+		SKL_CATCH
+		{
 			caught = 1;
 		}
-		skl_set_trap(ctx, trap);
-		skl_throw(ctx, "twice");
-	} else {
+		SKL_END_TRY(ctx, trap)
+		if(caught == 1)
+		{
+			skl_throw(ctx, "twice");
+		}
+	}
+	SKL_CATCH
+	{
 		caught = 2;
 	}
-	skl_set_trap(ctx, trap);
+	SKL_END_TRY(ctx, trap)
 	munit_assert_int(2, ==, caught);
 
 	return MUNIT_OK;
