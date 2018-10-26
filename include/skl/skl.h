@@ -151,6 +151,20 @@ skl_as_string(skl_ctx_t* ctx, skl_index_t index);
 SKL_API double
 skl_as_number(skl_ctx_t* ctx, skl_index_t index);
 
+// Box
+
+SKL_API void
+skl_box_new(skl_ctx_t* ctx);
+
+SKL_API void
+skl_box_wrap(skl_ctx_t* ctx, int index);
+
+SKL_API void
+skl_box_unwrap(skl_ctx_t* ctx, int index);
+
+SKL_API void
+skl_box_put(skl_ctx_t* ctx, int index);
+
 // List
 
 SKL_API void
