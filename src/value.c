@@ -1,6 +1,12 @@
 #include "value.h"
+#define XXH_INLINE_ALL
+#define XXH_PRIVATE_API
+#define XXH_NAMESPACE skl_
+#include <xxHash/xxhash.h>
 
 #ifdef SKL_NO_NAN_BOXING
+
+#include <string.h>
 
 bool
 skl_value_is_ref(skl_value_t value)
@@ -50,6 +56,23 @@ skl_value_make_ref(skl_value_type_t type, void* ref)
 		.type = type,
 		.data = { .ref = ref }
 	};
+}
+
+khint_t
+skl_value_equal(skl_value_t lhs, skl_value_t rhs)
+{
+	return lhs.type == rhs.type && lhs.data.ref == rhs.data.ref;
+}
+
+khint_t
+skl_value_hash(skl_value_t value)
+{
+	// Hash type and data separately because there can be padding junk in between
+	XXH32_state_t state;
+	XXH32_reset(&state, __LINE__); // TODO: better seed (per map seed?)
+	XXH32_update(&state, &cell.type, sizeof(cell.type));
+	XXH32_update(&state, &cell.data, sizeof(cell.data));
+	return XXH32_digest(&state);
 }
 
 #else
@@ -128,6 +151,18 @@ skl_value_check_ref_type(skl_value_t value, const skl_gc_info_t* gc_info)
 
 	const skl_gc_header_t* header = nanbox_to_pointer(value);
 	return header->gc_info == gc_info;
+}
+
+khint_t
+skl_value_equal(skl_value_t lhs, skl_value_t rhs)
+{
+	return memcmp(&lhs, &rhs, sizeof(skl_value_t)) == 0;
+}
+
+khint_t
+skl_value_hash(skl_value_t value)
+{
+	return XXH32(&value, sizeof(value), __LINE__);
 }
 
 #endif

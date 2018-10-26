@@ -38,6 +38,7 @@ typedef int32_t skl_index_t;
 	X(SKL_VAL_STRING) \
 	X(SKL_VAL_BOX) \
 	X(SKL_VAL_LIST) \
+	X(SKL_VAL_MAP) \
 	X(SKL_VAL_PROC) \
 	X(SKL_VAL_OPAQUE) \
 
@@ -181,11 +182,14 @@ skl_map_new(skl_ctx_t* ctx);
 SKL_API void
 skl_map_set(skl_ctx_t* ctx, skl_index_t index);
 
-SKL_API void
+SKL_API bool
 skl_map_get(skl_ctx_t* ctx, skl_index_t index);
 
-SKL_API void
-skl_map_get_default(skl_ctx_t* ctx, skl_index_t index);
+SKL_API bool
+skl_map_has(skl_ctx_t* ctx, skl_index_t index);
+
+SKL_API bool
+skl_map_delete(skl_ctx_t* ctx, skl_index_t index);
 
 // Garbage collection
 

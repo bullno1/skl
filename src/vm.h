@@ -9,10 +9,13 @@
 
 
 #define SKL_SAFE_STACK_ADDR(ADDR, CTX, INDEX) \
+	SKL_SAFE_STACK_INDEX(ADDR, CTX, INDEX, "Invalid stack index") \
+
+#define SKL_SAFE_STACK_INDEX(ADDR, CTX, INDEX, MSG) \
 	do { \
 		skl_vm_t* vm = ctx->vm; \
 		ADDR = skl_vm_stack_addr(vm, (INDEX)); \
-		SKL_ASSERT((CTX), vm->fp->bp <= (ADDR) && (ADDR) < vm->sp, "Invalid stack index") \
+		SKL_ASSERT((CTX), vm->fp->bp <= (ADDR) && (ADDR) < vm->sp, (MSG)) \
 	} while(0);
 
 #define SKL_GET_OBJ(VALUE, CTX, INDEX, TYPE) \
@@ -117,9 +120,6 @@ skl_value_t*
 skl_vm_stack_addr(const skl_vm_t* vm, skl_index_t index);
 
 void
-skl_vm_unsafe_pop(skl_ctx_t* ctx);
-
-skl_value_t
-skl_vm_back(skl_ctx_t* ctx);
+skl_vm_unsafe_pop(skl_ctx_t* ctx, int n);
 
 #endif

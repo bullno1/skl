@@ -64,9 +64,9 @@ skl_vm_back(skl_ctx_t* ctx)
 }
 
 void
-skl_vm_unsafe_pop(skl_ctx_t* ctx)
+skl_vm_unsafe_pop(skl_ctx_t* ctx, int n)
 {
-	--ctx->vm->sp;
+	ctx->vm->sp -= n;
 }
 
 

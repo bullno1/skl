@@ -107,30 +107,39 @@ void
 skl_list_set(skl_ctx_t* ctx, skl_index_t index, skl_index_t n)
 {
 	skl_list_t* list;
-	SKL_GET_OBJ(list, ctx, index, SKL_VAL_LIST);
+	skl_value_t* item;
 
-	skl_list_int_set(ctx, list, n, skl_vm_back(ctx));
-	skl_vm_unsafe_pop(ctx);
+	SKL_GET_OBJ(list, ctx, index, SKL_VAL_LIST);
+	SKL_SAFE_STACK_INDEX(item, ctx, -1, "Stack underflow");
+
+	skl_list_int_set(ctx, list, n, *item);
+	skl_vm_unsafe_pop(ctx, 1);
 }
 
 void
 skl_list_push(skl_ctx_t* ctx, skl_index_t index)
 {
 	skl_list_t* list;
-	SKL_GET_OBJ(list, ctx, index, SKL_VAL_LIST);
+	skl_value_t* item;
 
-	skl_list_int_push(ctx, list, skl_vm_back(ctx));
-	skl_vm_unsafe_pop(ctx);
+	SKL_GET_OBJ(list, ctx, index, SKL_VAL_LIST);
+	SKL_SAFE_STACK_INDEX(item, ctx, -1, "Stack underflow");
+
+	skl_list_int_push(ctx, list, *item);
+	skl_vm_unsafe_pop(ctx, 1);
 }
 
 void
 skl_list_insert(skl_ctx_t* ctx, skl_index_t index, skl_index_t n)
 {
 	skl_list_t* list;
-	SKL_GET_OBJ(list, ctx, index, SKL_VAL_LIST);
+	skl_value_t* item;
 
-	skl_list_int_insert(ctx, list, n, skl_vm_back(ctx));
-	skl_vm_unsafe_pop(ctx);
+	SKL_GET_OBJ(list, ctx, index, SKL_VAL_LIST);
+	SKL_SAFE_STACK_INDEX(item, ctx, -1, "Stack underflow");
+
+	skl_list_int_insert(ctx, list, n, *item);
+	skl_vm_unsafe_pop(ctx, 1);
 }
 
 void

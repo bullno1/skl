@@ -2,6 +2,7 @@
 #define SICKLE_VALUE_H
 
 #include "common.h"
+#include "vendor/khash.h"
 
 #ifdef SKL_NO_NAN_BOXING
 
@@ -38,5 +39,11 @@ skl_value_make_number(double number);
 
 skl_value_t
 skl_value_make_ref(skl_value_type_t type, void* ref);
+
+khint_t
+skl_value_equal(skl_value_t lhs, skl_value_t rhs);
+
+khint_t
+skl_value_hash(skl_value_t value);
 
 #endif
